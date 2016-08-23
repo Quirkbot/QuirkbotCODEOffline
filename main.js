@@ -9,3 +9,7 @@ var compilerWorker = fork( './compiler/compiler.js' )
 var code = express()
 code.use( express.static( './dist_polymer' ) )
 code.listen( 8888 )
+
+var cleanExit = function() { process.exit() }
+process.on('SIGINT', cleanExit) // catch ctrl-c
+process.on('SIGTERM', cleanExit) // catch kill
