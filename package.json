@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-lite",
-  "main": "http://localhost:8888",
+  "main": "http://localhost:8000",
 	"node-main": "main.js",
 	"window": {
     "title": "Quirkbot Lite",
