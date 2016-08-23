@@ -1,0 +1,14 @@
+node_modules
+.env
+.tmp-build
+.tmp-sketches
+
+dist_polymer
+
+compiler
+compiler_db/*
+!compiler_db/.gitkeep
+
+api
+api_db/*
+!api_db/.gitkeep
