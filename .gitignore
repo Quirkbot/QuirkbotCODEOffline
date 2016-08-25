@@ -4,6 +4,7 @@ node_modules
 .tmp-build
 .tmp-sketches
 
+code
 dist_polymer
 
 compiler
