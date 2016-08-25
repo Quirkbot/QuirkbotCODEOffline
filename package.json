@@ -3,6 +3,7 @@
   "main": "main.html",
 	"node-main": "main.js",
 	"chromium-args": "--load-extension=extension",
+	"inject_js_start": "gui.js",
 	"window": {
     "title": "Quirkbot Lite",
     "toolbar": true,
