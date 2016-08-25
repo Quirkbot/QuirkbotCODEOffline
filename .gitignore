@@ -1,4 +1,5 @@
 node_modules
+*.log
 .env
 .tmp-build
 .tmp-sketches
@@ -12,3 +13,5 @@ compiler_db/*
 api
 api_db/*
 !api_db/.gitkeep
+
+extension
