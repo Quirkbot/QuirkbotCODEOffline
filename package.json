@@ -1,10 +1,10 @@
 {
   "name": "quirkbot-lite",
   "main": "main.html",
-	"node-main": "main.js",
-	"chromium-args": "--load-extension=extension",
-	"inject_js_start": "gui.js",
-	"window": {
+  "node-main": "main.js",
+  "chromium-args": "--load-extension=node_modules/quirkbot-chrome-app",
+  "inject_js_start": "gui.js",
+  "window": {
     "title": "Quirkbot Lite",
     "toolbar": true,
     "frame": true,
@@ -15,11 +15,23 @@
   "description": "",
   "dependencies": {
     "dotenv": "^2.0.0",
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "quirkbot-api": "git@github.com:Quirkbot/QuirkbotDataApi.git#0.2.2",
+    "quirkbot-chrome-app": "git@github.com:Quirkbot/QuirkbotChromeApp.git#0.2.0",
+    "quirkbot-code-static": "git@github.com:Quirkbot/QuirkbotCODE.git#0.4.3",
+    "quirkbot-compiler": "git@github.com:Quirkbot/QuirkbotCompilerStack.git#0.6.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-file": "^0.3.0",
+    "gulp-json-editor": "^2.2.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "echo \"PRE INSTALL\"",
+    "postinstall": "sh postinstall.sh",
+    "gulp": "node ./node_modules/gulp/bin/gulp.js"
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL"
