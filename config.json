@@ -1,5 +1,6 @@
 {
 	"credentials": {
+		"email": "hello@quirkbot.com",
 		"nickname": "quirkbot-lite",
 		"password": "RoboticCreatures",
 		"birthdate": "2014-01-01",
