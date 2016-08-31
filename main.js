@@ -6,14 +6,14 @@ var modulePath = function( module ){
 }
 
 // Load configuration file
-var config = require( path.resolve( __dirname, 'config.json' ) );
+var config = require( path.resolve( __dirname, 'config.json' ) )
 
 // Set global environment
 process.env.NODE_ENV = "lite"
 
 var startApi = function() {
 	// Start api
-	process.env.DISK_DB_PATH = path.resolve( __dirname, 'db', 'api.db' );
+	process.env.DISK_DB_PATH = path.resolve( __dirname, 'db', 'api.db' )
 	process.env.PORT = config.ports.api
 	process.env.LITE_NICKNAME = config.credentials.nickname
 	process.env.LITE_PASSWORD = config.credentials.password
@@ -43,9 +43,9 @@ var startCode = function() {
 	code.listen( config.ports.code )
 }
 
-startApi();
-startCompiler();
-startCode();
+startApi()
+startCompiler()
+startCode()
 
 // Graceful shutdown, kind of
 var cleanExit = function() { process.exit() }

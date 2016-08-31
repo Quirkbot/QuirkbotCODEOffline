@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<title>Quirkbot lite</title>
 		<script>
-			var config = require( './config.json' );
+			var config = require( './config.json' )
 			var waitOn = require( 'wait-on' )
 			var opts = {
 				resources: [
@@ -20,8 +20,8 @@
 				if( err ) {
 					console.log( err );
 				}
-				console.log( 'compiler and api running' );
-				window.location = "http://localhost:" + config.ports.code;
+				console.log( 'compiler and api running' )
+				window.location = "http://localhost:" + config.ports.code
 			})
 		</script>
 	</head>

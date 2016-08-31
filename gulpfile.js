@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
-var path = require('path');
-var fs = require('fs');
-var gulp = require('gulp');
-var file = require('gulp-file');
-var jeditor = require('gulp-json-editor');
-var del = require('del');
-var config = require('./config.json');
+var path = require('path')
+var fs = require('fs')
+var gulp = require('gulp')
+var file = require('gulp-file')
+var jeditor = require('gulp-json-editor')
+var del = require('del')
+var config = require('./config.json')
 
 gulp.task('patch-extension', function () {
 	return gulp.src("node_modules/quirkbot-chrome-app/manifest.json")
