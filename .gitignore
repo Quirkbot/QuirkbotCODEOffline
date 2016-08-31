@@ -1,18 +1,9 @@
 node_modules
 *.log
-.env
 .tmp-build
 .tmp-sketches
 
-code
 dist_polymer
 
-compiler
-compiler_db/*
-!compiler_db/.gitkeep
-
-api
-api_db/*
-!api_db/.gitkeep
-
-extension
+db/*
+!db/.gitkeep
