@@ -7,37 +7,43 @@ var modulePath = function( module ){
 
 // Load configuration file
 var config = require( path.resolve( __dirname, 'config.json' ) )
-
-// Set global environment
-process.env.NODE_ENV = "lite"
+var apiEnv = {
+	NODE_ENV: "lite",
+	DISK_DB_PATH: path.resolve( __dirname, './db' ) + path.sep,
+	PORT: config.ports.api,
+	LITE_NICKNAME: config.credentials.nickname,
+	LITE_PASSWORD: config.credentials.password,
+	LITE_EMAIL: config.credentials.email
+}
+var compilerEnv = {
+	NODE_ENV: "lite",
+	DISK_DB_PATH: path.resolve( __dirname, 'db' ),
+	PORT: config.ports.compiler,
+	WEB_CONCURRENCY: 1,
+}
 
 var startApi = function() {
-	// Start api
-	process.env.DISK_DB_PATH = path.resolve( __dirname, 'db', 'api.db' )
-	process.env.PORT = config.ports.api
-	process.env.LITE_NICKNAME = config.credentials.nickname
-	process.env.LITE_PASSWORD = config.credentials.password
-	process.env.LITE_EMAIL = config.credentials.email
-	var api = require(
-		path.resolve( modulePath( 'quirkbot-api' ), 'app.js' )
+	var api = fork(
+		path.resolve( modulePath( 'quirkbot-api' ), 'app.js' ),
+		{ env: apiEnv	}
 	)
 }
 
 var startCompiler = function() {
 	// Start compiler process
-	process.env.DISK_DB_PATH = path.resolve( __dirname, 'db', 'compiler.db' )
-	process.env.PORT = config.ports.compiler
-	process.env.WEB_CONCURRENCY = 1
 	var compilerServer = fork(
-		path.resolve( modulePath( 'quirkbot-compiler' ), 'server.js' )
+		path.resolve( modulePath( 'quirkbot-compiler' ), 'server.js' ),
+		{ env: compilerEnv	}
 	)
 	var compilerWorker = fork(
-		path.resolve( modulePath( 'quirkbot-compiler' ), 'compiler.js' )
+		path.resolve( modulePath( 'quirkbot-compiler' ), 'compiler.js' ),
+		{ env: compilerEnv	}
 	)
 }
 
 var startCode = function() {
 	// Serve CODE;
+	process.env.NODE_ENV = "lite"
 	var code = express()
 	code.use( express.static( path.resolve( __dirname, 'dist_polymer' ) ) )
 	code.listen( config.ports.code )
