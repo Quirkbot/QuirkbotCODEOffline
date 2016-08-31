@@ -14,12 +14,12 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "dotenv": "^2.0.0",
     "express": "^4.14.0",
-    "quirkbot-api": "git@github.com:Quirkbot/QuirkbotDataApi.git#0.2.2",
+    "quirkbot-api": "git@github.com:Quirkbot/QuirkbotDataApi.git#0b974a9",
     "quirkbot-chrome-app": "git@github.com:Quirkbot/QuirkbotChromeApp.git#0.2.0",
-    "quirkbot-code-static": "git@github.com:Quirkbot/QuirkbotCODE.git#0.4.3",
-    "quirkbot-compiler": "git@github.com:Quirkbot/QuirkbotCompilerStack.git#0.6.1"
+    "quirkbot-code-static": "git@github.com:Quirkbot/QuirkbotCODE.git#48b1e01f53bf37161f4e9b72e99b7d3514a16778",
+    "quirkbot-compiler": "git@github.com:Quirkbot/QuirkbotCompilerStack.git#81364a8a75ef5b28f69aab9d96d820ebdbf31f0e",
+    "wait-on": "^1.5.2"
   },
   "devDependencies": {
     "del": "^2.2.2",

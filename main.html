@@ -4,8 +4,28 @@
 		<meta charset="utf-8">
 		<title>Quirkbot lite</title>
 		<script>
-			window.location = "http://localhost:8000/program"
+			var config = require( './config.json' );
+			var waitOn = require( 'wait-on' )
+			var opts = {
+				resources: [
+					'http://localhost:' + config.ports.api,
+					'http://localhost:' + config.ports.compiler,
+					'http://localhost:' + config.ports.code
+				],
+				interval: 1000,
+				timeout: 30000,
+				window: 1000,
+			}
+			waitOn( opts, function( err ) {
+				if( err ) {
+					console.log( err );
+				}
+				console.log( 'compiler and api running' );
+				window.location = "http://localhost:" + config.ports.code;
+			})
 		</script>
 	</head>
-	<body></body>
+	<body>
+		Waiting code, api and compiler apps to run...
+	</body>
 </html>
