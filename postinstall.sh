@@ -5,7 +5,8 @@ npm install
 cd src/assets
 bower install
 cd ../..
-npm run gulp -- build:polymer --environment=develop
+npm run gulp -- build:polymer --environment=lite
 cd ../..
 mv node_modules/quirkbot-code-static/dist_polymer ./
-rm -rf node_modules/quirkbot-code-static
+
+npm run gulp -- build
