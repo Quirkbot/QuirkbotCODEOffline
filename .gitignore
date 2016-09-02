@@ -3,4 +3,5 @@ node_modules
 .tmp-build
 .tmp-sketches
 
-dist
+build
+cache

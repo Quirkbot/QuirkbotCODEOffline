@@ -2,15 +2,16 @@
   "name": "quirkbot",
   "version": "0.0.1",
   "description": "",
-  "devDependencies": {
+  "dependencies": {
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-file": "^0.3.0",
     "gulp-json-editor": "^2.2.1",
+    "nw-builder": "^3.0.0",
     "run-sequence": "^1.2.2"
   },
   "scripts": {
-		"gulp" : "node ./node_modules/gulp/bin/gulp.js"
+    "gulp": "node ./node_modules/gulp/bin/gulp.js"
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL"

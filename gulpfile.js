@@ -4,7 +4,6 @@ var path = require('path')
 var fs = require('fs')
 var gulp = require('gulp')
 var file = require('gulp-file')
-var rename = require('gulp-rename')
 var runSequence = require('run-sequence');
 var exec = require('child_process').exec
 var jeditor = require('gulp-json-editor')
