@@ -45,7 +45,7 @@ var startCode = function() {
 	// Serve CODE;
 	process.env.NODE_ENV = "lite"
 	var code = express()
-	code.use( express.static( path.resolve( __dirname, 'dist_polymer' ) ) )
+	code.use( express.static( path.resolve( __dirname, 'code' ) ) )
 	code.listen( config.ports.code )
 }
 

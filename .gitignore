@@ -3,7 +3,8 @@ node_modules
 .tmp-build
 .tmp-sketches
 
-dist_polymer
+code
+extension
 
 db/*
 !db/.gitkeep
