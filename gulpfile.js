@@ -9,6 +9,7 @@ var exec = require('child_process').exec
 var jeditor = require('gulp-json-editor')
 var del = require('del')
 var config = require(path.resolve('src', 'config.json'))
+var NwBuilder = require('nw-builder');
 
 /*
  * This task install src npm dependencies
@@ -22,7 +23,7 @@ gulp.task('install-dependencies', function (cb) {
  */
 gulp.task('patch-extension', function () {
 	return gulp.src(
-			path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app', 'dist', 'manifest.json' )
+			path.resolve( 'src', 'extension', 'manifest.json' )
 		)
 		.pipe(
 			jeditor(function (json) {
@@ -34,7 +35,7 @@ gulp.task('patch-extension', function () {
 			})
 		)
 		.pipe(
-			gulp.dest( path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app', 'dist' ) )
+			gulp.dest( path.resolve( 'src', 'extension' ) )
 		)
 });
 
@@ -47,7 +48,7 @@ gulp.task('patch-code', function () {
 		return 'window.QUIRKBOT_CODE_DEFAULT_USER_NICKNAME = "' + opts.nickname + '"; \
 						window.QUIRKBOT_CODE_DEFAULT_USER_PASSWORD = "' + opts.password + '";'
 	}
-	return file('injected_script.js', template(config.credentials))
+	return file('injected_script.js', template(config.credentials), {src:true})
 		.pipe(gulp.dest(path.resolve('src', 'code')));
 });
 
@@ -80,21 +81,34 @@ gulp.task('move-files', ['move-code', 'move-extension'])
 /*
  * This task makes the app ready to execute
  */
-gulp.task('build', function() {
-	return runSequence([
+gulp.task('build', function(cb) {
+	runSequence(
 		'install-dependencies',
-		'patch-extension',
-		'patch-code',
 		'move-files',
-		// 'clean'
-	]);
+		['patch-extension', 'patch-code'],
+		'clean',
+		cb
+	);
 });
 
 /*
  * This task packages the app as a platform specified executable program
  */
 gulp.task('package', ['build'], function () {
-	// Run nwjs packaging
+	var nw = new NwBuilder({
+	    files: path.resolve( './', 'src', '**' ), // use the glob format
+	    platforms: [ 'osx64', 'win64', 'linux64'],
+	    version: '0.16.1'
+	});
+
+	nw.on('log',  console.log);
+
+	// Build returns a promise
+	return nw.build().then(function () {
+	   console.log('all done!');
+	}).catch(function (error) {
+	    console.error(error);
+	});
 });
 
 /*

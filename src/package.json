@@ -1,5 +1,5 @@
 {
-  "name": "quirkbot-lite-src",
+  "name": "quirkbot-lite",
   "main": "main.html",
   "node-main": "main.js",
   "chromium-args": "--load-extension=extension",
