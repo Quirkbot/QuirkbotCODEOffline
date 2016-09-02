@@ -5,16 +5,24 @@ var fs = require('fs')
 var gulp = require('gulp')
 var file = require('gulp-file')
 var rename = require('gulp-rename')
+var exec = require('child_process').exec
 var jeditor = require('gulp-json-editor')
 var del = require('del')
-var config = require('./config.json')
+var config = require(path.resolve('src', 'config.json'))
+
+/*
+ * This task install src npm dependencies
+ */
+gulp.task('install-dependencies', function (cb) {
+	exec('npm --prefix src install src', cb )
+})
 
 /*
  * This task adds "*://localhost/*" to the extension allowed domains
  */
 gulp.task('patch-extension', function () {
 	return gulp.src(
-			path.resolve( 'node_modules', 'quirkbot-chrome-app', 'manifest.json' )
+			path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app', 'manifest.json' )
 		)
 		.pipe(
 			jeditor(function (json) {
@@ -26,7 +34,7 @@ gulp.task('patch-extension', function () {
 			})
 		)
 		.pipe(
-			gulp.dest( path.resolve( 'node_modules', 'quirkbot-chrome-app' ) )
+			gulp.dest( path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app' ) )
 		)
 });
 
@@ -40,7 +48,7 @@ gulp.task('patch-code', function () {
 						window.QUIRKBOT_CODE_DEFAULT_USER_PASSWORD = "' + opts.password + '";'
 	}
 	return file('injected_script.js', template(config.credentials))
-		.pipe(gulp.dest('code'));
+		.pipe(gulp.dest(path.resolve('src', 'code')));
 });
 
 /*
@@ -48,9 +56,9 @@ gulp.task('patch-code', function () {
  */
 gulp.task('move-code', function () {
 	return gulp.src(
-		path.resolve('node_modules', 'quirkbot-code-static', 'dist', 'lite', 'dist_polymer', '**')
+		path.resolve('src', 'node_modules', 'quirkbot-code-static', 'dist', 'lite', 'dist_polymer', '**')
 	)
-	.pipe(gulp.dest(path.resolve('code')))
+	.pipe(gulp.dest(path.resolve('src', 'code')))
 })
 
 /*
@@ -58,9 +66,9 @@ gulp.task('move-code', function () {
  */
 gulp.task('move-extension', function () {
 	return gulp.src(
-		path.resolve('node_modules', 'quirkbot-chrome-app', 'dist', '**')
+		path.resolve('src', 'node_modules', 'quirkbot-chrome-app', 'dist', '**')
 	)
-	.pipe(gulp.dest(path.resolve('extension')))
+	.pipe(gulp.dest(path.resolve('src', 'extension')))
 })
 
 /*
@@ -72,7 +80,13 @@ gulp.task('move-files', ['move-code', 'move-extension'])
 /*
  * This task makes the app ready to execute
  */
-gulp.task('build', ['patch-extension', 'patch-code', 'move-files']);
+gulp.task('build', [
+	'install-dependencies',
+	'patch-extension',
+	'patch-code',
+	'move-files',
+	'clean'
+]);
 
 /*
  * This task packages the app as a platform specified executable program
@@ -88,18 +102,15 @@ gulp.task('deploy', function () {
 	// Deploy to s3
 });
 
-gulp.task('test', function () {
-	console.log( 'test 123' );
-})
-
 /*
  * This task cleans the app so it doesn't contains unused big source files
  */
-gulp.task('clean', function () {
-	return del( [
-		'node_modules',
-		'dist_polymer'
-	])
+gulp.task('clean-code', function (cb) {
+	exec('npm --prefix src uninstall quirkbot-code-static src', cb)
 })
+gulp.task('clean-extension', function (cb) {
+	exec('npm --prefix src uninstall quirkbot-chrome-app src', cb)
+})
+gulp.task('clean', ['clean-code', 'clean-extension'])
 
 module.exports = gulp;

@@ -3,4 +3,8 @@ node_modules
 .tmp-build
 .tmp-sketches
 
-dist
+code
+extension
+
+db/*
+!db/.gitkeep

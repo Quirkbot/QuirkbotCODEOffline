@@ -6,7 +6,7 @@ var modulePath = function( module ){
 }
 
 // Load configuration file
-var config = require( path.resolve( __dirname, 'config.json' ) )
+var config = require( path.resolve( './', 'config.json' ) )
 var apiEnv = {
 	NODE_ENV: "lite",
 	DISK_DB_PATH: path.resolve( __dirname, './db' ) + path.sep,
