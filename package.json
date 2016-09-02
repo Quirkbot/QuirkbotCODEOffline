@@ -7,10 +7,10 @@
     "gulp": "^3.9.1",
     "gulp-file": "^0.3.0",
     "gulp-json-editor": "^2.2.1",
-    "gulp-rename": "^1.2.2"
+    "run-sequence": "^1.2.2"
   },
   "scripts": {
-    "postinstall": "node postinstall.js"
+		"gulp" : "node ./node_modules/gulp/bin/gulp.js"
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL"

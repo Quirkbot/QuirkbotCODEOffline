@@ -5,6 +5,7 @@ var fs = require('fs')
 var gulp = require('gulp')
 var file = require('gulp-file')
 var rename = require('gulp-rename')
+var runSequence = require('run-sequence');
 var exec = require('child_process').exec
 var jeditor = require('gulp-json-editor')
 var del = require('del')
@@ -22,7 +23,7 @@ gulp.task('install-dependencies', function (cb) {
  */
 gulp.task('patch-extension', function () {
 	return gulp.src(
-			path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app', 'manifest.json' )
+			path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app', 'dist', 'manifest.json' )
 		)
 		.pipe(
 			jeditor(function (json) {
@@ -34,7 +35,7 @@ gulp.task('patch-extension', function () {
 			})
 		)
 		.pipe(
-			gulp.dest( path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app' ) )
+			gulp.dest( path.resolve( 'src', 'node_modules', 'quirkbot-chrome-app', 'dist' ) )
 		)
 });
 
@@ -80,13 +81,15 @@ gulp.task('move-files', ['move-code', 'move-extension'])
 /*
  * This task makes the app ready to execute
  */
-gulp.task('build', [
-	'install-dependencies',
-	'patch-extension',
-	'patch-code',
-	'move-files',
-	'clean'
-]);
+gulp.task('build', function() {
+	return runSequence([
+		'install-dependencies',
+		'patch-extension',
+		'patch-code',
+		'move-files',
+		// 'clean'
+	]);
+});
 
 /*
  * This task packages the app as a platform specified executable program
@@ -111,6 +114,9 @@ gulp.task('clean-code', function (cb) {
 gulp.task('clean-extension', function (cb) {
 	exec('npm --prefix src uninstall quirkbot-chrome-app src', cb)
 })
-gulp.task('clean', ['clean-code', 'clean-extension'])
+gulp.task('clean-etc', function (cb) {
+	return del([path.resolve('./', 'src', 'etc')])
+})
+gulp.task('clean', ['clean-code', 'clean-extension', 'clean-etc'])
 
 module.exports = gulp;
