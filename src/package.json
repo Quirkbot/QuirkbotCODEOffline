@@ -14,10 +14,10 @@
   "description": "",
   "dependencies": {
     "express": "^4.14.0",
-    "quirkbot-api": "git@github.com:Quirkbot/QuirkbotDataApi.git#0b974a9",
-    "quirkbot-chrome-app": "^0.2.5",
-    "quirkbot-code-static": "^0.4.6",
-    "quirkbot-compiler": "git@github.com:Quirkbot/QuirkbotCompilerStack.git#81364a8a75ef5b28f69aab9d96d820ebdbf31f0e",
+    "quirkbot-data-api": "*",
+    "quirkbot-chrome-app": "*",
+    "quirkbot-code-static": "*",
+    "quirkbot-compiler": "*",
     "wait-on": "^1.5.2"
   },
   "author": "Quirkbot <hello@quirkbot.com>",
