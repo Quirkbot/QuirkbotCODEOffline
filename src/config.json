@@ -1,0 +1,14 @@
+{
+	"credentials": {
+		"email": "hello@quirkbot.com",
+		"nickname": "quirkbot-lite",
+		"password": "RoboticCreatures",
+		"birthdate": "2014-01-01",
+		"confirmedEmail": true
+	},
+	"ports": {
+		"code": 9510,
+		"compiler": 9511,
+		"api": 9512
+	}
+}

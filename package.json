@@ -1,25 +1,20 @@
 {
-  "name": "quirkbot-lite",
-  "main": "main.html",
-	"node-main": "main.js",
-	"chromium-args": "--load-extension=extension",
-	"inject_js_start": "gui.js",
-	"window": {
-    "title": "Quirkbot Lite",
-    "toolbar": true,
-    "frame": true,
-    "width": 960,
-    "height": 768
-  },
+  "name": "quirkbot-lite-builder",
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "dotenv": "^2.0.0",
-    "express": "^4.14.0"
+    "gulp": "^3.9.1",
+    "gulp-file": "^0.3.0",
+    "gulp-json-editor": "^2.2.1",
+    "nwjs-builder": "^1.13.1",
+    "run-sequence": "^1.2.2",
+    "es6-promise": "3.2.1",
+    "ncp": "2.0.0",
+    "rimraf": "2.4.4"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "gulp": "node ./node_modules/gulp/bin/gulp.js",
+    "test": "exit 0"
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL"
