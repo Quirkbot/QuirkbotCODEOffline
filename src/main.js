@@ -24,7 +24,7 @@ var compilerEnv = {
 
 var startApi = function() {
 	var api = fork(
-		path.resolve( modulePath( 'quirkbot-api' ), 'app.js' ),
+		path.resolve( modulePath( 'quirkbot-data-api' ), 'app.js' ),
 		{ env: apiEnv	}
 	)
 }
@@ -50,8 +50,8 @@ var startCode = function() {
 }
 
 startApi()
-//startCompiler()
-//startCode()
+startCompiler()
+startCode()
 
 // Graceful shutdown, kind of
 var cleanExit = function() {
