@@ -8,16 +8,16 @@ var modulePath = function( module ){
 // Load configuration file
 var config = require( path.resolve( './', 'config.json' ) )
 var apiEnv = {
-	NODE_ENV: "lite",
-	DISK_DB_PATH: path.resolve( __dirname, './db' ) + path.sep,
+	NODE_ENV: 'lite',
+	DISK_DB_PATH: 'db' + path.sep,
 	PORT: config.ports.api,
 	LITE_NICKNAME: config.credentials.nickname,
 	LITE_PASSWORD: config.credentials.password,
 	LITE_EMAIL: config.credentials.email
 }
 var compilerEnv = {
-	NODE_ENV: "lite",
-	DISK_DB_PATH: path.resolve( __dirname, 'db' ),
+	NODE_ENV: 'lite',
+	DISK_DB_PATH: 'db' + path.sep,
 	PORT: config.ports.compiler,
 	WEB_CONCURRENCY: 1,
 }
@@ -50,10 +50,12 @@ var startCode = function() {
 }
 
 startApi()
-startCompiler()
-startCode()
+//startCompiler()
+//startCode()
 
 // Graceful shutdown, kind of
-var cleanExit = function() { process.exit() }
-process.on( 'SIGINT', cleanExit ) // catch ctrl-c
-process.on( 'SIGTERM', cleanExit ) // catch kill
+var cleanExit = function() {
+	process.exit()
+};
+process.on( 'SIGINT', process.exit ) // catch ctrl-c
+process.on( 'SIGTERM', process.exit ) // catch kill

@@ -5,3 +5,10 @@ node_modules
 
 build
 cache
+
+src/code
+src/extension
+src/etc
+
+src/db/*
+!src/db/.gitkeep
