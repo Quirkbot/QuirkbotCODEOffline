@@ -1,0 +1,36 @@
+environment:
+  nodejs_version: "6.5"
+
+platform:
+  - x86
+  - x64
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm install
+
+build_script:
+  - cmd: node package.js
+
+test_script:
+  - node --version
+  - npm --version
+  - cmd: npm test
+
+artifacts:
+  - path: build
+    name: build
+
+deploy:
+  provider: S3
+  access_key_id:
+    secure: AkqgS6TgE6nC0WUZ3nNtqoH1LkPOYhol/bSlMRleKcg=
+  secret_access_key:
+    secure: 8hFJeMNTHobCOn8OkZirlb3iCEGjUHtxsWSFv3Jo79nklT34asKfOVcFzf3WJ1/B
+  bucket: quirkbot-downloads-stage
+  region: us-east-1
+  set_public: true
+  folder: quirkbot-lite-builds
+  artifact: build
+
+version: "{build}"
