@@ -5,7 +5,7 @@ os:
 - linux
 - osx
 script:
-- node gulpfile.js package
+- node gulp.js package
 deploy:
   provider: s3
   access_key_id:
