@@ -104,8 +104,7 @@ gulp.task('build', ['compose'], function (cb) {
 	NWB.commands.nwbuild(
 		'src',
 		{
-			outputDir: 'build',
-			outputFormat: 'ZIP'
+			outputDir: 'build'
 		},
 		cb
 	);
@@ -114,7 +113,7 @@ gulp.task('build', ['compose'], function (cb) {
 /*
  * This task packages the app
  */
-gulp.task('package', ['compose'], function (cb) {
+gulp.task('package', ['build'], function (cb) {
 
 });
 
