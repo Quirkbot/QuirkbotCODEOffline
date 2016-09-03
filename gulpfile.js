@@ -86,7 +86,7 @@ gulp.task('move-files', ['move-code', 'move-extension'])
 /*
  * This task makes the app ready to execute
  */
-gulp.task('build', function(cb) {
+gulp.task('compose', function(cb) {
 	runSequence(
 		'pre-clean',
 		'install-dependencies',
@@ -98,24 +98,26 @@ gulp.task('build', function(cb) {
 });
 
 /*
- * This task packages the app as a platform specified executable program
+ * This task builds the app as a platform specified executable program
  */
-gulp.task('package', ['build'], function (cb) {
+gulp.task('build', ['compose'], function (cb) {
 	NWB.commands.nwbuild(
 		'src',
 		{
-			outputDir: 'build'
+			outputDir: 'build',
+			outputFormat: 'ZIP'
 		},
 		cb
 	);
 });
 
 /*
- * This task deploys the app to amazon
+ * This task packages the app
  */
-gulp.task('deploy', function () {
-	// Deploy to s3
+gulp.task('package', ['compose'], function (cb) {
+
 });
+
 
 /*
  * This task clean everything produced by the builds
