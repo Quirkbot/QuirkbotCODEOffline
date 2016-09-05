@@ -6,7 +6,11 @@ var modulePath = function( module ){
 }
 
 // Load configuration file
-var config = require( path.resolve( './', 'config.json' ) )
+var config = require( './config.json' )
+
+// Prepare the environment variables
+process.env.NODE_ENV = 'lite';
+
 var apiEnv = {
 	NODE_ENV: 'lite',
 	DISK_DB_PATH: 'db' + path.sep,
@@ -15,47 +19,55 @@ var apiEnv = {
 	LITE_PASSWORD: config.credentials.password,
 	LITE_EMAIL: config.credentials.email
 }
+
 var compilerEnv = {
 	NODE_ENV: 'lite',
 	DISK_DB_PATH: 'db' + path.sep,
 	PORT: config.ports.compiler,
-	WEB_CONCURRENCY: 1,
+	WEB_CONCURRENCY: 1
+}
+
+for (e in process.env) {
+	apiEnv[e] = process.env[e];
+	compilerEnv[e] = process.env[e];
 }
 
 var startApi = function() {
-	var api = fork(
+	fork(
 		path.resolve( modulePath( 'quirkbot-data-api' ), 'app.js' ),
-		{ env: apiEnv	}
+		{ env: apiEnv}
 	)
 }
 
-var startCompiler = function() {
-	// Start compiler process
-	var compilerServer = fork(
+var startCompilerServer = function() {
+	fork(
 		path.resolve( modulePath( 'quirkbot-compiler' ), 'server.js' ),
 		{ env: compilerEnv	}
 	)
-	var compilerWorker = fork(
+}
+
+var startCompilerWorker = function() {
+	fork(
 		path.resolve( modulePath( 'quirkbot-compiler' ), 'compiler.js' ),
 		{ env: compilerEnv	}
-	)
+	);
 }
 
 var startCode = function() {
-	// Serve CODE;
-	process.env.NODE_ENV = "lite"
 	var code = express()
-	code.use( express.static( path.resolve( __dirname, 'code' ) ) )
+	code.use( express.static( 'code' ) )
 	code.listen( config.ports.code )
 }
 
-startApi()
-startCompiler()
-startCode()
+startApi();
+startCompilerServer();
+startCompilerWorker();
+startCode();
 
 // Graceful shutdown, kind of
 var cleanExit = function() {
-	process.exit()
+	console.log('Trying a clean exit');
+	process.exit();
 };
-process.on( 'SIGINT', process.exit ) // catch ctrl-c
-process.on( 'SIGTERM', process.exit ) // catch kill
+process.on( 'SIGINT', cleanExit ) // catch ctrl-c
+process.on( 'SIGTERM', cleanExit ) // catch kill

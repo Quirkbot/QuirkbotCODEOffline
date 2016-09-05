@@ -104,8 +104,7 @@ gulp.task('build', ['compose'], function (cb) {
 	NWB.commands.nwbuild(
 		'src',
 		{
-			outputDir: 'build',
-			outputFormat: 'ZIP'
+			outputDir: 'build'
 		},
 		cb
 	);
@@ -125,6 +124,7 @@ gulp.task('package', ['build'], function (cb) {
 gulp.task('pre-clean', function (cb) {
 	utils.pass()
 	.then(utils.deleteDir(path.resolve('build')))
+	.then(utils.deleteDir(path.resolve('src', 'node_modules')))
 	.then(utils.deleteDir(path.resolve('src', 'code')))
 	.then(utils.deleteDir(path.resolve('src', 'extension')))
 	.then(utils.deleteDir(path.resolve('src', 'etc')))
