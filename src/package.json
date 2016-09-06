@@ -2,7 +2,7 @@
   "name": "quirkbot-lite",
   "main": "main.html",
   "node-main": "main.js",
-  "chromium-args": "--load-extension=extension",
+  "chromium-args": "--load-extension=extension --enable-logging=stderr",
   "window": {
     "title": "Quirkbot Lite",
     "toolbar": true,

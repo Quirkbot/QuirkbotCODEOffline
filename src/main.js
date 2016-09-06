@@ -1,4 +1,5 @@
 var path = require( 'path' );
+var fork = require( 'child_process' ).fork;
 var modulePath = function( module ){
 	return path.resolve( require.resolve( path.join( module, 'package.json' ) ), '..' );
 }
@@ -18,17 +19,11 @@ process.env.LITE_EMAIL = config.credentials.email;
 process.env.WEB_CONCURRENCY = 1;
 
 // Initialized COMPILER (cluster based)
-require(path.resolve( modulePath( 'quirkbot-compiler' ), 'server.js' ));
-require(path.resolve( modulePath( 'quirkbot-compiler' ), 'compiler.js' ));
-
-////////////////////////////////////////////////////////////////////////////////
-var cluster = require('cluster');
-if(!cluster.isMaster) return;
-////////////////////////////////////////////////////////////////////////////////
-// Everything from here on will only be executed once (outside cluster)
+var compilerServer = fork(path.resolve( modulePath( 'quirkbot-compiler' ), 'server.js' ));
+var compilerWorker = fork(path.resolve( modulePath( 'quirkbot-compiler' ), 'compiler.js' ));
 
 // Iniitialize API
-require(path.resolve( modulePath( 'quirkbot-data-api' ), 'app.js' ));
+var api = fork(path.resolve( modulePath( 'quirkbot-data-api' ), 'app.js' ));
 
 // Iniitialize CODE
 var express = require( 'express' );
@@ -38,8 +33,15 @@ code.listen( config.ports.code );
 
 // Graceful shutdown, kind of
 var cleanExit = function() {
-	console.log('Trying a clean exit');
 	process.exit();
 };
+process.on( 'SIGQUIT', cleanExit )
+process.on( 'SIGHUP', cleanExit )
 process.on( 'SIGINT', cleanExit ) // catch ctrl-c
 process.on( 'SIGTERM', cleanExit ) // catch kill
+
+process.on('exit', function() {
+	compilerServer.kill('SIGINT');
+	compilerWorker.kill('SIGINT');
+	api.kill('SIGINT');
+})
