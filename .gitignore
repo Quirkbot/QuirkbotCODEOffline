@@ -6,6 +6,7 @@ node_modules
 build
 cache
 
+src/db
 src/code
 src/extension
 src/etc

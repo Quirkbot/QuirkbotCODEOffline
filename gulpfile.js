@@ -89,6 +89,8 @@ gulp.task('move-files', ['move-code', 'move-extension'])
 gulp.task('compose', function(cb) {
 	runSequence(
 		'pre-clean',
+		'pre-clean',
+		'create-db',
 		'install-dependencies',
 		'move-files',
 		['patch-extension', 'patch-code'],
@@ -117,6 +119,18 @@ gulp.task('package', ['build'], function (cb) {
 	cb();
 });
 
+/*
+ * This task clean everything produced by the builds
+ */
+gulp.task('create-db', function (cb) {
+	utils.pass()
+	.then(utils.mkdir(path.resolve('src', 'db')))
+	.then(function() {
+		cb();
+	})
+	.catch(cb);
+});
+
 
 /*
  * This task clean everything produced by the builds
@@ -126,6 +140,7 @@ gulp.task('pre-clean', function (cb) {
 	.then(utils.deleteDir(path.resolve('build')))
 	.then(utils.deleteDir(path.resolve('src', 'node_modules')))
 	.then(utils.deleteDir(path.resolve('src', 'code')))
+	.then(utils.deleteDir(path.resolve('src', 'db')))
 	.then(utils.deleteDir(path.resolve('src', 'extension')))
 	.then(utils.deleteDir(path.resolve('src', 'etc')))
 	.then(function() {
