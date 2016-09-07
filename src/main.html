@@ -4,13 +4,16 @@
 		<meta charset="utf-8">
 		<title>Quirkbot lite</title>
 		<script>
-			var config = require( './config.json' )
-			var waitOn = require( 'wait-on' )
+			var path = require( 'path' );
+			var config = require( path.resolve( './', 'config.json') );
+			var waitOn = require( 'wait-on' );
 			var opts = {
 				resources: [
 					'http://localhost:' + config.ports.api,
 					'http://localhost:' + config.ports.compiler,
-					'http://localhost:' + config.ports.code
+					'http://localhost:' + config.ports.code,
+					// path.resolve( './', 'db' ),
+					// path.resolve( './', 'extension' )
 				],
 				interval: 1000,
 				timeout: 30000,
@@ -20,8 +23,8 @@
 				if( err ) {
 					console.log( err );
 				}
-				console.log( 'compiler and api running' )
-				window.location = "http://localhost:" + config.ports.code
+				console.log( 'compiler and api running' );
+				window.location = "http://localhost:" + config.ports.code;
 			})
 		</script>
 	</head>
