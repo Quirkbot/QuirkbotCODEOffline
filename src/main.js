@@ -1,11 +1,30 @@
-var path = require( 'path' );
 var fork = require( 'child_process' ).fork;
+var path = require( 'path' );
 var modulePath = function( module ){
 	return path.resolve( require.resolve( path.join( module, 'package.json' ) ), '..' );
 }
 
+var fs = require( 'fs' );
+var dbPath = path.resolve( './', 'db' );
+if( !fs.existsSync( dbPath ) ) {
+	console.log( 'creating databases directory' )
+	console.log( dbPath )
+	fs.mkdirSync( dbPath );
+} else {
+	console.log( 'found database folder', dbPath )
+	console.log( dbPath )
+}
+var extensionPath = path.resolve( './', 'extension' );
+if( !fs.existsSync( extensionPath ) ) {
+	console.log( 'could not find extension folder' )
+	console.log( extensionPath )
+} else {
+	console.log( 'found extension folder' )
+	console.log( extensionPath )
+}
+
 // Load configuration file
-var config = require( './config.json' )
+var config = require( path.resolve( './', 'config.json' ) );
 
 // Prepare the environment variables
 process.env.NODE_ENV = 'lite';
@@ -18,12 +37,12 @@ process.env.LITE_PASSWORD = config.credentials.password;
 process.env.LITE_EMAIL = config.credentials.email;
 process.env.WEB_CONCURRENCY = 1;
 
-// Initialized COMPILER (cluster based)
-var compilerServer = fork(path.resolve( modulePath( 'quirkbot-compiler' ), 'server.js' ));
-var compilerWorker = fork(path.resolve( modulePath( 'quirkbot-compiler' ), 'compiler.js' ));
-
 // Iniitialize API
-var api = fork(path.resolve( modulePath( 'quirkbot-data-api' ), 'app.js' ));
+var api = fork( path.resolve( modulePath( 'quirkbot-data-api' ), 'app.js' ) );
+
+// Initialized COMPILER (cluster based)
+var compilerServer = fork( path.resolve( modulePath( 'quirkbot-compiler' ), 'server.js' ) );
+var compilerWorker = fork( path.resolve( modulePath( 'quirkbot-compiler' ), 'compiler.js' ) );
 
 // Iniitialize CODE
 var express = require( 'express' );
@@ -40,7 +59,7 @@ process.on( 'SIGHUP', cleanExit )
 process.on( 'SIGINT', cleanExit ) // catch ctrl-c
 process.on( 'SIGTERM', cleanExit ) // catch kill
 
-process.on('exit', function() {
+process.on( 'exit', function() {
 	compilerServer.kill('SIGINT');
 	compilerWorker.kill('SIGINT');
 	api.kill('SIGINT');
