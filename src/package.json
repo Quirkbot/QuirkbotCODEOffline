@@ -1,10 +1,11 @@
 {
-  "name": "quirkbot-lite",
+  "name": "quirkbot-code-lite",
+  "executable-name": "Quirkbot",
   "main": "main.html",
-  "node-main": "main.js",
-  "chromium-args": "--data-path=./dataPath/ --load-extension=./extension --enable-logging=stderr",
+  "node-main": "init.js",
+  "chromium-args": "--load-extension=extension",
   "window": {
-    "title": "Quirkbot Lite",
+    "title": "Quirkbot",
     "toolbar": true,
     "frame": true,
     "width": 960,

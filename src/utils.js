@@ -1,8 +1,5 @@
 'use strict'
-var Promise = require('es6-promise').Promise
 var fs = require('fs')
-var ncp = require('ncp')
-var rimraf = require('rimraf')
 var path = require('path')
 var exec = require('child_process').exec
 
@@ -117,24 +114,6 @@ var readDir = function(path){
 }
 exports.readDir = readDir
 
-var copyDir = function(source, destination){
-	return function(){
-		var payload = arguments
-
-		var promise = function(resolve, reject){
-			ncp(source, destination, function (error) {
-				if (error) {
-					reject(error)
-					return
-				}
-				resolve.apply(null, payload)
-			})
-		}
-		return new Promise(promise)
-	}
-}
-exports.copyDir = copyDir
-
 var findFiles = function(startPath, filter, files){
 	files = files || []
 
@@ -192,21 +171,6 @@ var mkdir = function(path){
 }
 exports.mkdir = mkdir
 
-var deleteDir = function(path){
-	return function(){
-		var promise = function(resolve, reject){
-			rimraf(path, function(error) {
-				if (error) {
-					reject(error)
-					return
-				}
-				resolve()
-			})
-		}
-		return new Promise(promise)
-	}
-}
-exports.deleteDir = deleteDir
 
 var log = function(){
 	var payload = arguments

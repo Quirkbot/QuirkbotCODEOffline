@@ -1,15 +1,13 @@
 'use strict'
 
-var utils = require('./utils.js');
+var utils = require('./utils.js')
 var path = require('path')
-var fs = require('fs')
 var gulp = require('gulp')
 var file = require('gulp-file')
-var runSequence = require('run-sequence');
-var exec = require('child_process').exec
+var runSequence = require('run-sequence')
 var jeditor = require('gulp-json-editor')
 var config = require(path.resolve('src', 'config.json'))
-var NWB = require('nwjs-builder');
+var NWB = require('nwjs-builder')
 
 /*
  * This task install src npm dependencies
@@ -18,7 +16,7 @@ gulp.task('install-dependencies', function (cb) {
 	utils.pass()
 	.then(utils.execute('npm --prefix src install src'))
 	.then(function() {
-		cb();
+		cb()
 	})
 	.catch(cb)
 })
@@ -33,8 +31,8 @@ gulp.task('patch-extension', function () {
 		.pipe(
 			jeditor(function (json) {
 				var matches = json.externally_connectable.matches
-				if( matches.indexOf( "*://localhost/*" ) == -1 ) {
-					matches.push("*://localhost/*")
+				if( matches.indexOf( '*://localhost/*' ) == -1 ) {
+					matches.push('*://localhost/*')
 				}
 				return json
 			})
@@ -42,7 +40,7 @@ gulp.task('patch-extension', function () {
 		.pipe(
 			gulp.dest( path.resolve( 'src', 'extension' ) )
 		)
-});
+})
 
 /*
  * This task creates an injected_script.js file with relevant information
@@ -54,8 +52,8 @@ gulp.task('patch-code', function () {
 						window.QUIRKBOT_CODE_DEFAULT_USER_PASSWORD = "' + opts.password + '";'
 	}
 	return file('injected_script.js', template(config.credentials), {src:true})
-		.pipe(gulp.dest(path.resolve('src', 'code')));
-});
+		.pipe(gulp.dest(path.resolve('src', 'code')))
+})
 
 /*
  * This task moves CODE's polymer build from lite environment to the app root
@@ -90,34 +88,70 @@ gulp.task('compose', function(cb) {
 	runSequence(
 		'pre-clean',
 		'pre-clean',
-		'create-db',
+		//'create-db',
 		'install-dependencies',
 		'move-files',
 		['patch-extension', 'patch-code'],
 		'post-clean',
 		cb
-	);
-});
+	)
+})
 
 /*
  * This task builds the app as a platform specified executable program
  */
 gulp.task('build', ['compose'], function (cb) {
-	NWB.commands.nwbuild(
-		'src',
-		{
-			outputDir: 'build'
-		},
-		cb
-	);
-});
+	var pkg = require(path.resolve('src','package.json'))
+	// Build the app
+	new Promise(function(resolve, reject) {
+		var check = function (error) {
+			if(error){
+				return reject(error)
+			}
+			resolve()
+		}
+		NWB.commands.nwbuild(
+			'src',
+			{
+				outputDir: 'build',
+				version: '0.17.0',
+				outputName: `${pkg.name}-${pkg.version}-{target}`,
+				executableName: pkg['executable-name'],
+				sideBySide: true
+			},
+			check
+		)
+	})
+	// Make the OSX modifications
+	.then(function () {
+		if(process.platform !== 'darwin') {
+			return
+		}
+		console.log('Moving extension side by side with executable.')
+		return utils.pass()
+		.then(utils.copyDir(
+			path.resolve(`build/${pkg.name}-${pkg.version}-osx-x64/${pkg['executable-name']}.app/Contents/Resources/app.nw/extension`),
+			path.resolve(`build/${pkg.name}-${pkg.version}-osx-x64/${pkg['executable-name']}.app/Contents/MacOS/extension`)
+		))
+		.then(utils.deleteDir(
+			path.resolve(`build/${pkg.name}-${pkg.version}-osx-x64/${pkg['executable-name']}.app/Contents/Resources/app.nw/extension`)
+		))
+
+	})
+	.then(function() {
+		cb()
+	})
+	.catch(cb)
+
+})
 
 /*
  * This task packages the app
  */
 gulp.task('package', ['build'], function (cb) {
-	cb();
-});
+	//if(process.platform === 'darwing')
+	cb()
+})
 
 /*
  * This task clean everything produced by the builds
@@ -126,10 +160,10 @@ gulp.task('create-db', function (cb) {
 	utils.pass()
 	.then(utils.mkdir(path.resolve('src', 'db')))
 	.then(function() {
-		cb();
+		cb()
 	})
-	.catch(cb);
-});
+	.catch(cb)
+})
 
 
 /*
@@ -144,10 +178,10 @@ gulp.task('pre-clean', function (cb) {
 	.then(utils.deleteDir(path.resolve('src', 'extension')))
 	.then(utils.deleteDir(path.resolve('src', 'etc')))
 	.then(function() {
-		cb();
+		cb()
 	})
-	.catch(cb);
-});
+	.catch(cb)
+})
 
 /*
  * This task cleans the app so it doesn't contains unused big source files
@@ -158,9 +192,9 @@ gulp.task('post-clean', function (cb) {
 	.then(utils.execute('npm --prefix src uninstall quirkbot-chrome-app src'))
 	.then(utils.deleteDir(path.resolve('src', 'etc')))
 	.then(function() {
-		cb();
+		cb()
 	})
-	.catch(cb);
-});
+	.catch(cb)
+})
 
-module.exports = gulp;
+module.exports = gulp

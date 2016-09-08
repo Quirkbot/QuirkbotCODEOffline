@@ -4,18 +4,19 @@
 		<meta charset="utf-8">
 		<title>Quirkbot lite</title>
 		<script>
+			// Init the main.js process
+			nw.process.mainModule.exports.init();
+
 			var path = require( 'path' );
 			var config = require( path.resolve( './', 'config.json') );
 			var waitOn = require( 'wait-on' );
 			var opts = {
 				resources: [
 					'http://localhost:' + config.ports.api,
-					'http://localhost:' + config.ports.compiler,
-					'http://localhost:' + config.ports.code,
-					// path.resolve( './', 'db' ),
-					// path.resolve( './', 'extension' )
+					//'http://localhost:' + config.ports.compiler,
+					'http://localhost:' + config.ports.code
 				],
-				interval: 1000,
+				interval: 500,
 				timeout: 30000,
 				window: 1000,
 			}
