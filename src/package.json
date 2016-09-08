@@ -3,7 +3,7 @@
   "executable-name": "Quirkbot",
   "main": "main.html",
   "node-main": "init.js",
-  "chromium-args": "--load-extension=extension",
+  "chromium-args": "--load-extension='./extension'",
   "window": {
     "title": "Quirkbot",
     "toolbar": true,

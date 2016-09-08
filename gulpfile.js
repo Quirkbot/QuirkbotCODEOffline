@@ -2,6 +2,7 @@
 
 var utils = require('./utils.js')
 var path = require('path')
+var fs = require('fs')
 var gulp = require('gulp')
 var file = require('gulp-file')
 var runSequence = require('run-sequence')
@@ -88,7 +89,6 @@ gulp.task('compose', function(cb) {
 	runSequence(
 		'pre-clean',
 		'pre-clean',
-		//'create-db',
 		'install-dependencies',
 		'move-files',
 		['patch-extension', 'patch-code'],
@@ -146,19 +146,19 @@ gulp.task('build', ['compose'], function (cb) {
 })
 
 /*
- * This task packages the app
+ * This task packages the windows app
  */
-gulp.task('package', ['build'], function (cb) {
-	//if(process.platform === 'darwing')
-	cb()
-})
+gulp.task('package-windows', ['build'], function (cb) {
+	var pkg = require(path.resolve('src','package.json'))
 
-/*
- * This task clean everything produced by the builds
- */
-gulp.task('create-db', function (cb) {
+	// Create the NSIS file from the template
+	var template = fs.readFileSync(path.resolve('assets-windows', 'installer.nsi.template')).toString()
+	.split('{{APP_NAME}}').join(pkg['executable-name'])
+	fs.writeFileSync(path.resolve('assets-windows', 'installer.nsi'), template)
+
+	// Execute the NSIS builder
 	utils.pass()
-	.then(utils.mkdir(path.resolve('src', 'db')))
+	.then(utils.execute('makensis.exe assets-windows\\installer.nsi'))
 	.then(function() {
 		cb()
 	})
