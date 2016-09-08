@@ -148,7 +148,7 @@ gulp.task('build', ['compose'], function (cb) {
 /*
  * This task packages the windows app
  */
-gulp.task('package-windows', ['build'], function (cb) {
+gulp.task('package-windows', function (cb) {
 	var pkg = require(path.resolve('src','package.json'))
 
 	// Create the NSIS file from the template
