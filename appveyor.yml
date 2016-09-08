@@ -7,6 +7,7 @@ platform:
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
+  - clist
   - cinst -y nsis
   - SET PATH=C:\Program Files\NSIS\;C:\Program Files (x86)\NSIS\;%PATH%
 
