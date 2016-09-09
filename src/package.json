@@ -18,8 +18,7 @@
     "quirkbot-data-api": "*",
     "quirkbot-chrome-app": "*",
     "quirkbot-code-static": "*",
-    "quirkbot-compiler": "*",
-    "wait-on": "^1.5.2"
+    "quirkbot-compiler": "*"
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL"
