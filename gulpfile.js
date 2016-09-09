@@ -15,7 +15,7 @@ var NWB = require('nwjs-builder')
  */
 gulp.task('install-dependencies', function (cb) {
 	utils.pass()
-	.then(utils.execute('npm --prefix src install src'))
+	.then(utils.execute('npm --prefix src install src --no-optional --production'))
 	.then(function() {
 		cb()
 	})
