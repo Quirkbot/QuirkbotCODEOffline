@@ -19,7 +19,20 @@
     "quirkbot-chrome-app": "*",
     "quirkbot-code-static": "*",
     "quirkbot-compiler": "*",
-    "wait-on": "^1.5.2"
+    "wait-on": "^1.5.2",
+		"node-webkit-updater": "^0.3.3"
+  },
+	"manifestUrl": "http://localhost:8080/package.json",
+  "packages": {
+      "mac": {
+         "url": "http://localhost:8080/releases/mac/latest.zip"
+      },
+      "win": {
+         "url": "http://localhost:8080/releases/win/latest.zip"
+      },
+      "linux64": {
+         "url": "http://localhost:8080/releases/linux/latest.tar.gz"
+      }
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL"
