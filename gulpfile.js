@@ -15,7 +15,8 @@ var NWB = require('nwjs-builder')
  */
 gulp.task('install-dependencies', function (cb) {
 	utils.pass()
-	.then(utils.execute('npm --prefix src install src'))
+	.then(utils.execute('npm cache clean'))
+	.then(utils.execute('npm --no-optional --production --prefix src install src'))
 	.then(function() {
 		cb()
 	})
@@ -123,7 +124,7 @@ gulp.task('build', ['compose'], function (cb) {
 		)
 	})
 	// Make the OSX modifications
-	.then(function () {
+	/*.then(function () {
 		if(process.platform !== 'darwin') {
 			return
 		}
@@ -137,7 +138,7 @@ gulp.task('build', ['compose'], function (cb) {
 			path.resolve(`build/${pkg.name}-${pkg.version}-osx-x64/${pkg['executable-name']}.app/Contents/Resources/app.nw/extension`)
 		))
 
-	})
+	})*/
 	.then(function() {
 		cb()
 	})
@@ -188,8 +189,8 @@ gulp.task('pre-clean', function (cb) {
  */
 gulp.task('post-clean', function (cb) {
 	utils.pass()
-	.then(utils.execute('npm --prefix src uninstall quirkbot-code-static src'))
-	.then(utils.execute('npm --prefix src uninstall quirkbot-chrome-app src'))
+	.then(utils.execute('npm --prefix src uninstall quirkbot-code-static'))
+	.then(utils.execute('npm --prefix src uninstall quirkbot-chrome-app'))
 	.then(utils.deleteDir(path.resolve('src', 'etc')))
 	.then(function() {
 		cb()

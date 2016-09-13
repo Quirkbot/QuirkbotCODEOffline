@@ -204,20 +204,48 @@ var modulePath = function(module){
 exports.modulePath = modulePath
 
 var portAvailable = function(port) {
-	var promise = function(resolve, reject){
-		var net = require('net')
-		var tester = net.createServer()
-		.once('error', function (err) {
-			reject(err)
-		})
-		.once('listening', function() {
-			tester.once('close', function() {
-				return resolve()
+	return function(){
+		var promise = function(resolve, reject){
+			var net = require('net')
+			var tester = net.createServer()
+			.once('error', function (err) {
+				if (err.code === 'EADDRINUSE') {
+					reject(err)
+				}
 			})
-			.close()
-		})
-		.listen(port)
+			.once('listening', function() {
+				tester.once('close', function() {
+					return resolve()
+				})
+				.close()
+			})
+			.listen(port)
+		}
+		return new Promise(promise)
 	}
-	return new Promise(promise)
 }
 exports.portAvailable = portAvailable
+
+var portBusy = function(port) {
+	return function(){
+		var promise = function(resolve, reject){
+			var net = require('net')
+			var tester = net.createServer()
+			.once('error', function (err) {
+				console.log(err)
+				if (err.code === 'EADDRINUSE') {
+					resolve()
+				}
+			})
+			.once('listening', function() {
+				tester.once('close', function() {
+					return reject('Port is free')
+				})
+				.close()
+			})
+			.listen(port)
+		}
+		return new Promise(promise)
+	}
+}
+exports.portBusy = portBusy
