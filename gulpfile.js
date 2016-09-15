@@ -115,10 +115,12 @@ gulp.task('build', ['compose'], function (cb) {
 			'src',
 			{
 				outputDir: 'build',
-				version: '0.17.0',
+				version: '0.17.3',
 				outputName: `${pkg.name}-${pkg.version}-{target}`,
 				executableName: pkg['executable-name'],
-				sideBySide: true
+				sideBySide: true,
+				winIco: path.resolve('src', 'assets', 'icon.ico'),
+				macIcns: path.resolve('src', 'assets', 'icon.hqx')
 			},
 			check
 		)
