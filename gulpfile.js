@@ -123,25 +123,7 @@ gulp.task('build', ['compose'], function (cb) {
 			check
 		)
 	})
-	// Make the OSX modifications
-	/*.then(function () {
-		if(process.platform !== 'darwin') {
-			return
-		}
-		console.log('Moving extension side by side with executable.')
-		return utils.pass()
-		.then(utils.copyDir(
-			path.resolve(`build/${pkg.name}-${pkg.version}-osx-x64/${pkg['executable-name']}.app/Contents/Resources/app.nw/extension`),
-			path.resolve(`build/${pkg.name}-${pkg.version}-osx-x64/${pkg['executable-name']}.app/Contents/MacOS/extension`)
-		))
-		.then(utils.deleteDir(
-			path.resolve(`build/${pkg.name}-${pkg.version}-osx-x64/${pkg['executable-name']}.app/Contents/Resources/app.nw/extension`)
-		))
-
-	})*/
-	.then(function() {
-		cb()
-	})
+	.then(cb)
 	.catch(cb)
 
 })
