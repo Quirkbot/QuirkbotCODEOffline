@@ -102,6 +102,8 @@ gulp.task('compose', function(cb) {
  * This task builds the app as a platform specified executable program
  */
 gulp.task('build', ['compose'], function (cb) {
+//gulp.task('build', function (cb) {
+
 	var pkg = require(path.resolve('src','package.json'))
 	// Build the app
 	new Promise(function(resolve, reject) {
@@ -115,10 +117,10 @@ gulp.task('build', ['compose'], function (cb) {
 			'src',
 			{
 				outputDir: 'build',
-				version: '0.17.3',
+				version: '0.17.3-sdk',
 				outputName: `${pkg.name}-${pkg.version}-{target}`,
 				executableName: pkg['executable-name'],
-				sideBySide: true,
+				sideBySide: false,
 				winIco: path.resolve('src', 'assets', 'icon.ico'),
 				macIcns: path.resolve('src', 'assets', 'icon.hqx')
 			},
@@ -168,6 +170,7 @@ gulp.task('pre-clean', function (cb) {
 	.catch(cb)
 })
 
+
 /*
  * This task cleans the app so it doesn't contains unused big source files
  */
@@ -176,10 +179,56 @@ gulp.task('post-clean', function (cb) {
 	.then(utils.execute('npm --prefix src uninstall quirkbot-code-static'))
 	.then(utils.execute('npm --prefix src uninstall quirkbot-chrome-app'))
 	.then(utils.deleteDir(path.resolve('src', 'etc')))
+	.then(function () {
+		var remove = require('find-remove')
+		var results = remove(path.resolve('src','node_modules'), {
+			extensions: [
+				'.md',
+				'.MD',
+				'.markdown',
+				'.log',
+				'.bak',
+				'.min.js'
+			],
+			files: [
+				//'package.json',
+				'npm-shrinkwrap.json',
+				'README',
+				'Procfile',
+				'Makefile',
+				'LICENSE',
+				'LICENSE.txt',
+				'LICENCE',
+				'License',
+				'license',
+				'CHANGELOG',
+				'.gitignore',
+				'.npmignore',
+				'.travis.yml',
+				'.jshintrc',
+				'.idea',
+				'.DS_Store'
+
+			],
+			dir: [
+				'test',
+				'example',
+				'examples'
+
+			],
+			'ignore':[
+				'npm-arduino-avr-gcc'
+			]
+		})
+		console.log(results)
+	})
 	.then(function() {
 		cb()
 	})
-	.catch(cb)
+	.catch(error => {
+		console.log(error)
+		cb(error)
+	})
 })
 
 module.exports = gulp

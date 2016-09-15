@@ -23,8 +23,7 @@
     "quirkbot-data-api": "*",
     "quirkbot-chrome-app": "*",
     "quirkbot-code-static": "*",
-    "quirkbot-compiler": "*",
-		"node-webkit-updater": "^0.3.3"
+    "quirkbot-compiler": "*"
   },
 	"manifestUrl": "http://localhost:8080/package.json",
   "packages": {

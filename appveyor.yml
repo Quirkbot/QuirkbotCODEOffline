@@ -12,7 +12,6 @@ install:
 
 build_script:
   - cmd: node gulp build
-  - cmd: node gulp package-windows
 
 test_script:
   - node --version
