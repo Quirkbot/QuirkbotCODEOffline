@@ -1,7 +1,7 @@
 !include "MUI2.nsh"
 
 Name "{{APP_NAME}}"
-BrandingText "aluxian.com"
+BrandingText "quirkbot.com"
 
 # set the icon
 !define MUI_ICON "icon.ico"
