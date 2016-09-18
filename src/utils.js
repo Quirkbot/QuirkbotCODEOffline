@@ -1,5 +1,6 @@
 'use strict'
 var fs = require('fs')
+var fork = require('child_process').fork
 var path = require('path')
 var exec = require('child_process').exec
 
@@ -249,3 +250,30 @@ var portBusy = function(port) {
 	}
 }
 exports.portBusy = portBusy
+
+var loadScriptToDom = function(src) {
+	return new Promise((resolve, reject) => {
+		const script = document.createElement('script')
+		let loaded
+		script.setAttribute('src', src)
+		let timeout = window.setTimeout(reject, 10000)
+		script.onreadystatechange = script.onload = function() {
+			if (!loaded) {
+				window.clearTimeout(timeout)
+				resolve()
+			}
+			loaded = true
+		}
+		document.getElementsByTagName('head')[0].appendChild(script)
+	})
+}
+exports.loadScriptToDom = loadScriptToDom
+
+var forkProcess = function(path) {
+	return new Promise((resolve) => {
+		var f = fork(path)
+		process.on('exit', () => f.kill())
+		resolve()
+	})
+}
+exports.forkProcess = forkProcess

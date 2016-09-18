@@ -120,7 +120,7 @@ gulp.task('build', ['compose'], function (cb) {
 				version: '0.17.3-sdk',
 				outputName: `${pkg.name}-${pkg.version}-{target}`,
 				executableName: pkg['executable-name'],
-				sideBySide: false,
+				sideBySide: true,
 				winIco: path.resolve('src', 'assets', 'icon.ico'),
 				macIcns: path.resolve('src', 'assets', 'icon.hqx')
 			},
@@ -178,6 +178,39 @@ gulp.task('post-clean', function (cb) {
 	utils.pass()
 	.then(utils.execute('npm --prefix src uninstall quirkbot-code-static'))
 	.then(utils.execute('npm --prefix src uninstall quirkbot-chrome-app'))
+	.then(utils.execute(
+		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-compiler')} uninstall newrelic mongoose es6-promise`
+	))
+	.then(utils.execute(
+		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-avr-gcc')} uninstall node-pre-gyp`
+	))
+	.then(utils.execute(
+		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-builder')} uninstall node-pre-gyp`
+	))
+	.then(utils.execute(
+		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-data-api')} uninstall `
+		+ 'newrelic '
+		+ 'loggly '
+		+ 'winston-loggly '
+		+ 'winston '
+		+ 'sails-mongo '
+		+ 'sails-generate '
+		+ 'node-mandrill '
+		+ 'grunt '
+		+ 'grunt-cli '
+		+ 'grunt-sync '
+		+ 'grunt-sails-linker '
+		+ 'grunt-contrib-clean '
+		+ 'grunt-contrib-coffee '
+		+ 'grunt-contrib-concat '
+		+ 'grunt-contrib-copy '
+		+ 'grunt-contrib-cssmin '
+		+ 'grunt-contrib-jst '
+		+ 'grunt-contrib-less '
+		+ 'grunt-contrib-uglify '
+		+ 'grunt-contrib-watch '
+		+ 'express-handlebars '
+	))
 	.then(utils.deleteDir(path.resolve('src', 'etc')))
 	.then(function () {
 		var remove = require('find-remove')
@@ -212,6 +245,7 @@ gulp.task('post-clean', function (cb) {
 			],
 			dir: [
 				'test',
+				'tests',
 				'example',
 				'examples'
 
