@@ -9,8 +9,10 @@
     "title": "Quirkbot",
     "toolbar": true,
     "frame": true,
-    "width": 960,
-    "height": 768
+    "width": 1920,
+    "height": 1080,
+    "min_width": 940,
+    "min_height": 600
   },
   "externally_connectable": {
     "matches": [
