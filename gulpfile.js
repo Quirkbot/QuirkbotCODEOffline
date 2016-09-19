@@ -122,7 +122,7 @@ gulp.task('build', ['compose'], function (cb) {
 				executableName: pkg['executable-name'],
 				sideBySide: true,
 				winIco: path.resolve('src', 'assets', 'icon.ico'),
-				macIcns: path.resolve('src', 'assets', 'icon.hqx')
+				macIcns: path.resolve('src', 'assets', 'icon.icns')
 			},
 			check
 		)
