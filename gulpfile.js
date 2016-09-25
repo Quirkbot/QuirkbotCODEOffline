@@ -11,7 +11,7 @@ var config = require(path.resolve('src', 'config.json'))
 var NWB = require('nwjs-builder')
 
 var ASSETS_DIR = `assets-${process.platform}`
-var BUILD_DIR = 'build'
+var BUILD_DIR = 'b'
 var SRC_DIR = 'src'
 
 
