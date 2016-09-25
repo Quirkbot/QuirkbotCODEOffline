@@ -20,7 +20,7 @@ test_script:
   - cmd: npm test
 
 artifacts:
-  - path: b\latest\*
+  - path: b\latest\**\*
     name: build
 
 deploy:
