@@ -10,13 +10,18 @@ var jeditor = require('gulp-json-editor')
 var config = require(path.resolve('src', 'config.json'))
 var NWB = require('nwjs-builder')
 
+var ASSETS_DIR = `assets-${process.platform}`
+var BUILD_DIR = 'build'
+var SRC_DIR = 'src'
+
+
 /*
  * This task install src npm dependencies
  */
 gulp.task('install-dependencies', function (cb) {
 	utils.pass()
 	.then(utils.execute('npm cache clean'))
-	.then(utils.execute('npm --no-optional --production --prefix src install src'))
+	.then(utils.execute(`npm --no-optional --production --prefix ${SRC_DIR} install ${SRC_DIR}`))
 	.then(function() {
 		cb()
 	})
@@ -28,7 +33,7 @@ gulp.task('install-dependencies', function (cb) {
  */
 gulp.task('patch-extension', function () {
 	return gulp.src(
-			path.resolve( 'src', 'extension', 'manifest.json' )
+			path.resolve( SRC_DIR, 'extension', 'manifest.json' )
 		)
 		.pipe(
 			jeditor(function (json) {
@@ -40,7 +45,7 @@ gulp.task('patch-extension', function () {
 			})
 		)
 		.pipe(
-			gulp.dest( path.resolve( 'src', 'extension' ) )
+			gulp.dest( path.resolve( SRC_DIR, 'extension' ) )
 		)
 })
 
@@ -54,7 +59,7 @@ gulp.task('patch-code', function () {
 						window.QUIRKBOT_CODE_DEFAULT_USER_PASSWORD = "' + opts.password + '";'
 	}
 	return file('injected_script.js', template(config.credentials), {src:true})
-		.pipe(gulp.dest(path.resolve('src', 'code')))
+		.pipe(gulp.dest(path.resolve(SRC_DIR, 'code')))
 })
 
 /*
@@ -62,9 +67,9 @@ gulp.task('patch-code', function () {
  */
 gulp.task('move-code', function () {
 	return gulp.src(
-		path.resolve('src', 'node_modules', 'quirkbot-code-static', 'dist', 'lite', 'dist_polymer', '**')
+		path.resolve(SRC_DIR, 'node_modules', 'quirkbot-code-static', 'dist', 'lite', 'dist_polymer', '**')
 	)
-	.pipe(gulp.dest(path.resolve('src', 'code')))
+	.pipe(gulp.dest(path.resolve(SRC_DIR, 'code')))
 })
 
 /*
@@ -72,16 +77,28 @@ gulp.task('move-code', function () {
  */
 gulp.task('move-extension', function () {
 	return gulp.src(
-		path.resolve('src', 'node_modules', 'quirkbot-chrome-app', 'dist', '**')
+		path.resolve(SRC_DIR, 'node_modules', 'quirkbot-chrome-app', 'dist', '**')
 	)
-	.pipe(gulp.dest(path.resolve('src', 'extension')))
+	.pipe(gulp.dest(path.resolve(SRC_DIR, 'extension')))
+})
+
+/*
+ * This task moves the platform specific updated
+ */
+gulp.task('move-updater', function (cb) {
+	utils.pass()
+	.then(utils.copyDir(
+		path.resolve(ASSETS_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' ),
+		path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' )
+	))
+	.then(cb)
+	.catch(cb)
 })
 
 /*
  * This task moves all needed files around
  */
-gulp.task('move-files', ['move-code', 'move-extension'])
-
+gulp.task('move-files', ['move-code', 'move-extension', 'move-updater'])
 
 /*
  * This task makes the app ready to execute
@@ -102,9 +119,8 @@ gulp.task('compose', function(cb) {
  * This task builds the app as a platform specified executable program
  */
 gulp.task('build', ['compose'], function (cb) {
-//gulp.task('build', function (cb) {
 
-	var pkg = require(path.resolve('src','package.json'))
+	var pkg = require(path.resolve(SRC_DIR,'package.json'))
 	// Build the app
 	new Promise(function(resolve, reject) {
 		var check = function (error) {
@@ -114,15 +130,15 @@ gulp.task('build', ['compose'], function (cb) {
 			resolve()
 		}
 		NWB.commands.nwbuild(
-			'src',
+			SRC_DIR,
 			{
-				outputDir: 'build',
-				version: '0.17.3-sdk',
-				outputName: `${pkg.name}-${pkg.version}-{target}`,
+				outputDir: BUILD_DIR,
+				version: '0.17.4',
+				outputName: 'a',
 				executableName: pkg['executable-name'],
 				sideBySide: true,
-				winIco: path.resolve('src', 'assets', 'icon.ico'),
-				macIcns: path.resolve('src', 'assets', 'icon.icns')
+				winIco: path.resolve(ASSETS_DIR, 'icon.ico'),
+				macIcns: path.resolve(ASSETS_DIR, 'icon.icns')
 			},
 			check
 		)
@@ -136,59 +152,85 @@ gulp.task('build', ['compose'], function (cb) {
  * This task packages the windows app
  */
 gulp.task('package-windows', function (cb) {
-	var pkg = require(path.resolve('src','package.json'))
+	var pkg = require(path.resolve(SRC_DIR,'package.json'))
 
 	// Create the NSIS file from the template
-	var template = fs.readFileSync(path.resolve('assets-windows', 'installer.nsi.template')).toString()
+	var template = fs.readFileSync(path.resolve(ASSETS_DIR, 'installer.nsi.template')).toString()
 	.split('{{APP_NAME}}').join(pkg['executable-name'])
-	fs.writeFileSync(path.resolve('assets-windows', 'installer.nsi'), template)
+	fs.writeFileSync(path.resolve(ASSETS_DIR, 'installer.nsi'), template)
 
 	// Execute the NSIS builder
 	utils.pass()
-	.then(utils.execute('makensis.exe assets-windows\\installer.nsi'))
+	.then(utils.execute(`makensis.exe ${ASSETS_DIR}\\installer.nsi`))
 	.then(function() {
 		cb()
 	})
 	.catch(cb)
 })
 
+/*
+ * This task packages the mac application
+ */
+gulp.task('package-darwin', function (cb) {
+	new Promise((resolve, reject) =>{
+		var pkg = require(path.resolve(SRC_DIR,'package.json'))
+		var appdmg = require('appdmg')
+		var dmg = appdmg({ source: `${ASSETS_DIR}/dmg.json`, target: `${BUILD_DIR}/${pkg['executable-name']} Installer.dmg` })
+		dmg.on('finish', resolve)
+		dmg.on('error', reject)
+	})
+	.then(cb)
+	.catch(cb)
+
+})
+
+/*
+ * This task packages the app, in the current platform
+ */
+gulp.task('package', function(cb) {
+	runSequence(
+		'build',
+		`package-${process.platform}`,
+		cb
+	)
+})
 
 /*
  * This task clean everything produced by the builds
  */
 gulp.task('pre-clean', function (cb) {
 	utils.pass()
-	.then(utils.deleteDir(path.resolve('build')))
-	.then(utils.deleteDir(path.resolve('src', 'node_modules')))
-	.then(utils.deleteDir(path.resolve('src', 'code')))
-	.then(utils.deleteDir(path.resolve('src', 'db')))
-	.then(utils.deleteDir(path.resolve('src', 'extension')))
-	.then(utils.deleteDir(path.resolve('src', 'etc')))
+	.then(utils.deleteDir(path.resolve(BUILD_DIR)))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'node_modules')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'code')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'db')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'extension')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function() {
 		cb()
 	})
 	.catch(cb)
 })
 
-
 /*
  * This task cleans the app so it doesn't contains unused big source files
  */
 gulp.task('post-clean', function (cb) {
 	utils.pass()
-	.then(utils.execute('npm --prefix src uninstall quirkbot-code-static'))
-	.then(utils.execute('npm --prefix src uninstall quirkbot-chrome-app'))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static`))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app`))
 	.then(utils.execute(
-		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-compiler')} uninstall newrelic mongoose es6-promise`
+		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler')} uninstall newrelic mongoose es6-promise`
 	))
 	.then(utils.execute(
-		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-avr-gcc')} uninstall node-pre-gyp`
+		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-avr-gcc')} uninstall node-pre-gyp`
 	))
 	.then(utils.execute(
-		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-builder')} uninstall node-pre-gyp`
+		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-builder')} uninstall node-pre-gyp`
 	))
 	.then(utils.execute(
-		`npm --prefix ${path.resolve('src', 'node_modules', 'quirkbot-data-api')} uninstall `
+		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-data-api')} uninstall `
 		+ 'newrelic '
 		+ 'loggly '
 		+ 'winston-loggly '
@@ -211,10 +253,10 @@ gulp.task('post-clean', function (cb) {
 		+ 'grunt-contrib-watch '
 		+ 'express-handlebars '
 	))
-	.then(utils.deleteDir(path.resolve('src', 'etc')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function () {
 		var remove = require('find-remove')
-		var results = remove(path.resolve('src','node_modules'), {
+		var results = remove(path.resolve(SRC_DIR,'node_modules'), {
 			extensions: [
 				'.md',
 				'.MD',
@@ -237,6 +279,7 @@ gulp.task('post-clean', function (cb) {
 				'CHANGELOG',
 				'.gitignore',
 				'.npmignore',
+				'.editorconfig',
 				'.travis.yml',
 				'.jshintrc',
 				'.idea',
@@ -247,14 +290,15 @@ gulp.task('post-clean', function (cb) {
 				'test',
 				'tests',
 				'example',
-				'examples'
+				'examples',
+				'Bootloader'
 
 			],
 			'ignore':[
 				'npm-arduino-avr-gcc'
 			]
 		})
-		console.log(results)
+		console.log(`Removed ${Object.keys(results).length} files.`)
 	})
 	.then(function() {
 		cb()
