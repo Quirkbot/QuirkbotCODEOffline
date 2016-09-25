@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "appdmg": "^0.4.5",
     "es6-promise": "3.2.1",
     "find-remove": "^0.2.12",
     "gulp": "^3.9.1",
@@ -14,6 +13,9 @@
     "nwjs-builder": "^1.13.1",
     "rimraf": "2.4.4",
     "run-sequence": "^1.2.2"
+  },
+  "optionalDependencies":{
+    "appdmg": "^0.4.5"
   },
   "scripts": {
     "gulp": "node ./node_modules/gulp/bin/gulp.js",
