@@ -166,7 +166,10 @@ gulp.task('package-win32', function (cb) {
 		console.log(std)
 		cb()
 	})
-	.catch(cb)
+	.catch(function(error) {
+		console.log(error)
+		cb(error)
+	})
 })
 
 /*
