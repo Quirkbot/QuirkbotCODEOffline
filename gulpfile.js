@@ -162,7 +162,8 @@ gulp.task('package-win32', function (cb) {
 	// Execute the NSIS builder
 	utils.pass()
 	.then(utils.execute(`makensis.exe ${ASSETS_DIR}\\installer.nsi`))
-	.then(function() {
+	.then(function(std) {
+		console.log(std)
 		cb()
 	})
 	.catch(cb)
