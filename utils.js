@@ -1,6 +1,7 @@
 'use strict'
 var Promise = require('es6-promise').Promise
 var fs = require('fs')
+var archiver = require('archiver')
 var ncp = require('ncp')
 var rimraf = require('rimraf')
 var path = require('path')
@@ -68,6 +69,23 @@ var deleteFile = function(path){
 }
 exports.deleteFile = deleteFile
 
+var moveFile = function(path, newPath){
+	return function(){
+		var payload = arguments
+		var promise = function(resolve, reject){
+			fs.rename(path, newPath, function (error) {
+				if (error) {
+					reject(error)
+					return
+				}
+				resolve.apply(null, payload)
+			})
+		}
+		return new Promise(promise)
+	}
+}
+exports.moveFile = moveFile
+
 var readFile = function(path){
 	return function(){
 		var promise = function(resolve, reject){
@@ -116,6 +134,39 @@ var readDir = function(path){
 	}
 }
 exports.readDir = readDir
+
+var zipDir = function(src, dst) {
+	return function(){
+		return new Promise(function(resolve, reject) {
+
+			var output = fs.createWriteStream(dst)
+			var archive = archiver('zip')
+
+			output.on('close', function() {
+				console.log(archive.pointer() + ' total bytes')
+				console.log('archiver has been finalized and the output file descriptor has closed.')
+				resolve()
+			})
+
+			archive.on('error', function(err) {
+				reject(err)
+			})
+
+			archive.pipe(output)
+
+			archive.bulk([
+				{
+					expand: true,
+					cwd: src,
+					src: ['*']
+				}
+			])
+
+			archive.finalize()
+		})
+	}
+}
+exports.zipDir = zipDir
 
 var copyDir = function(source, destination){
 	return function(){
