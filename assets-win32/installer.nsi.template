@@ -7,7 +7,7 @@ BrandingText "quirkbot.com"
 !define MUI_ICON "icon.ico"
 
 # define the resulting installer's name:
-OutFile "..\b\{{APP_NAME}}Installer.exe"
+OutFile "..\b\{{APP_NAME}} Installer.exe"
 
 # set the installation directory
 InstallDir "$PROGRAMFILES\{{APP_NAME}}\"

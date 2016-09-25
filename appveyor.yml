@@ -12,6 +12,7 @@ install:
 
 build_script:
   - cmd: node gulp.js package
+  - cmd: cd b && dir
 
 test_script:
   - node --version
