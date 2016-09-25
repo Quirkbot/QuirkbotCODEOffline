@@ -5,7 +5,7 @@ os:
 - osx
 script:
 - node gulp.js package
-- mkdir b/latest
+- mkdir -p b/latest
 - mv "b/Quirkbot Installer.dmg" "b/latest/Quirkbot Installer.dmg"
 deploy:
   provider: s3
