@@ -11,7 +11,7 @@ install:
   - SET PATH=C:\Program Files\NSIS\;C:\Program Files (x86)\NSIS\;%PATH%
 
 build_script:
-  - cmd: node gulp build
+  - cmd: node gulp package
 
 test_script:
   - node --version
@@ -19,7 +19,7 @@ test_script:
   - cmd: npm test
 
 artifacts:
-  - path: build
+  - path: b\Quirkbot Installer.exe
     name: build
 
 deploy:
