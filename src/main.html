@@ -4,28 +4,38 @@
 		<meta charset="utf-8">
 		<title>Quirkbot lite</title>
 		<script>
-			var config = require( './config.json' )
-			var waitOn = require( 'wait-on' )
-			var opts = {
-				resources: [
-					'http://localhost:' + config.ports.api,
-					//'http://localhost:' + config.ports.compiler,
-					'http://localhost:' + config.ports.code
-				],
-				interval: 1000,
-				timeout: 30000,
-				window: 1000,
+			// Init the main.js process
+			nw.process.mainModule.exports.init()
+
+			// Wait serves to be ready and redirect
+			var utils = require( './utils.js' )
+			var config = require( './config.json')
+			var waitForServers = function() {
+				console.log('Waiting')
+				utils.pass()
+				.then(utils.portBusy(config.ports.api))
+				.then(utils.portBusy(config.ports.code))
+				.then(() => window.location = "http://localhost:" + config.ports.code)
+				.catch(() => setTimeout(waitForServers, 500))
 			}
-			waitOn( opts, function( err ) {
-				if( err ) {
-					console.log( err );
-				}
-				console.log( 'compiler and api running' )
-				window.location = "http://localhost:" + config.ports.code
-			})
+			waitForServers()
 		</script>
 	</head>
 	<body>
-		Waiting code, api and compiler apps to run...
+		<style>
+			body {
+				background-color: rgba(235,0,138,0.5);
+			}
+			img {
+				margin: auto;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				position: absolute;
+				width: 500px;
+			}
+		</style>
+		<img src="assets/splash.png"/>
 	</body>
 </html>

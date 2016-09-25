@@ -1,0 +1,58 @@
+!include "MUI2.nsh"
+
+Name "{{APP_NAME}}"
+BrandingText "quirkbot.com"
+
+# set the icon
+!define MUI_ICON "icon.ico"
+
+# define the resulting installer's name:
+OutFile "..\b\{{APP_NAME}}Installer.exe"
+
+# set the installation directory
+InstallDir "$PROGRAMFILES\{{APP_NAME}}\"
+
+# app dialogs
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_INSTFILES
+
+!define MUI_FINISHPAGE_RUN_TEXT "Start {{APP_NAME}}"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\{{APP_NAME}}.exe"
+
+!insertmacro MUI_PAGE_FINISH
+!insertmacro MUI_LANGUAGE "English"
+
+# default section start
+Section
+
+  # delete the installed files
+  RMDir /r $INSTDIR
+
+  # define the path to which the installer should install
+  SetOutPath $INSTDIR
+
+  # specify the files to go in the output path
+  File /r ..\b\a\*
+
+  # create the uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall {{APP_NAME}}.exe"
+
+  # create shortcuts in the start menu and on the desktop
+  CreateShortCut "$SMPROGRAMS\{{APP_NAME}}.lnk" "$INSTDIR\{{APP_NAME}}.exe"
+  CreateShortCut "$SMPROGRAMS\Uninstall {{APP_NAME}}.lnk" "$INSTDIR\Uninstall {{APP_NAME}}.exe"
+  CreateShortCut "$DESKTOP\{{APP_NAME}}.lnk" "$INSTDIR\{{APP_NAME}}.exe"
+
+SectionEnd
+
+# create a section to define what the uninstaller does
+Section "Uninstall"
+
+  # delete the installed files
+  RMDir /r $INSTDIR
+
+  # delete the shortcuts
+  Delete "$SMPROGRAMS\{{APP_NAME}}.lnk"
+  Delete "$SMPROGRAMS\Uninstall {{APP_NAME}}.lnk"
+  Delete "$DESKTOP\{{APP_NAME}}.lnk"
+
+SectionEnd

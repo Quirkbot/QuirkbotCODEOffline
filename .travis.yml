@@ -5,6 +5,8 @@ os:
 - osx
 script:
 - node gulp.js package
+- mkdir -p b/latest
+- mv "b/Quirkbot Installer.dmg" "b/latest/Quirkbot Installer.dmg"
 deploy:
   provider: s3
   access_key_id:
@@ -13,6 +15,6 @@ deploy:
     secure: SykWIeVeGx6lCgt1I+p5A2iyoVITzIPEqliPZYxZ5o6Lx34Tbnv3EbcyhwPWNxrncUApHX3PpP4Wdzz6l0ZlikwYCNRIUwvSMK4Sk6XuCO3BGDPbfgWDioMmexqtHYJ27c7IVPP1yfJU1PT5euyUrfDTcjWC5ymyIZBxxca8b6+pNXZrg0UbdGmnakGV2Thg7gaIXNxmrSqoY8FEI0k0JFPX1adm5fEfOs4SkX5t8Vj6DqW58eim5b/y9Gajdlj5wvPM4lLWlEaM8OLixUmjy6pa3PUNoSJ4MS+ehgyXRw3GxSo6gQDhDGAxlHCyuQtFBjKxyy6TPfU6RDZsCQxt5dpqUSjzYe903XXME1on3FGOMocSfRWf98+veyf+nexX8PIVGv9sQnaW7qz+sU3yCYNnJbjatDU7nyCgHCViEYxYqmgY2+rKeRZuEeYx3F22AtkH+InuGR0omCwfEBfQFgot9Q2tdvyin7kqmpsxoTYaZCpSgotFOr9QFvKt9Y3Q2qBCYSzweJ6QypbQTCgRqBsa/pKyb7OSxXcWekASiFEpsMOKS8byQoeofabWM/vnbfPpwPsUSuPwjXFXtPpyPS2RPburHuMBdOBlO6tWvXm7W9BFAP3Iw43PtCGPp1Fa1VfQmECyqtrwOuSqMr3ih4LWtwyZj5ur++Jtutq2U7k=
   bucket: quirkbot-downloads-stage
   region: us-east-1
-  local_dir: build
+  local_dir: b/latest
   upload-dir: quirkbot-lite-builds
   skip_cleanup: true

@@ -1,8 +1,6 @@
 'use strict'
-var Promise = require('es6-promise').Promise
 var fs = require('fs')
-var ncp = require('ncp')
-var rimraf = require('rimraf')
+var fork = require('child_process').fork
 var path = require('path')
 var exec = require('child_process').exec
 
@@ -117,24 +115,6 @@ var readDir = function(path){
 }
 exports.readDir = readDir
 
-var copyDir = function(source, destination){
-	return function(){
-		var payload = arguments
-
-		var promise = function(resolve, reject){
-			ncp(source, destination, function (error) {
-				if (error) {
-					reject(error)
-					return
-				}
-				resolve.apply(null, payload)
-			})
-		}
-		return new Promise(promise)
-	}
-}
-exports.copyDir = copyDir
-
 var findFiles = function(startPath, filter, files){
 	files = files || []
 
@@ -192,21 +172,6 @@ var mkdir = function(path){
 }
 exports.mkdir = mkdir
 
-var deleteDir = function(path){
-	return function(){
-		var promise = function(resolve, reject){
-			rimraf(path, function(error) {
-				if (error) {
-					reject(error)
-					return
-				}
-				resolve()
-			})
-		}
-		return new Promise(promise)
-	}
-}
-exports.deleteDir = deleteDir
 
 var log = function(){
 	var payload = arguments
@@ -240,20 +205,75 @@ var modulePath = function(module){
 exports.modulePath = modulePath
 
 var portAvailable = function(port) {
-	var promise = function(resolve, reject){
-		var net = require('net')
-		var tester = net.createServer()
-		.once('error', function (err) {
-			reject(err)
-		})
-		.once('listening', function() {
-			tester.once('close', function() {
-				return resolve()
+	return function(){
+		var promise = function(resolve, reject){
+			var net = require('net')
+			var tester = net.createServer()
+			.once('error', function (err) {
+				if (err.code === 'EADDRINUSE') {
+					reject(err)
+				}
 			})
-			.close()
-		})
-		.listen(port)
+			.once('listening', function() {
+				tester.once('close', function() {
+					return resolve()
+				})
+				.close()
+			})
+			.listen(port)
+		}
+		return new Promise(promise)
 	}
-	return new Promise(promise)
 }
 exports.portAvailable = portAvailable
+
+var portBusy = function(port) {
+	return function(){
+		var promise = function(resolve, reject){
+			var net = require('net')
+			var tester = net.createServer()
+			.once('error', function (err) {
+				console.log(err)
+				if (err.code === 'EADDRINUSE') {
+					resolve()
+				}
+			})
+			.once('listening', function() {
+				tester.once('close', function() {
+					return reject('Port is free')
+				})
+				.close()
+			})
+			.listen(port)
+		}
+		return new Promise(promise)
+	}
+}
+exports.portBusy = portBusy
+
+var loadScriptToDom = function(src) {
+	return new Promise((resolve, reject) => {
+		const script = document.createElement('script')
+		let loaded
+		script.setAttribute('src', src)
+		let timeout = window.setTimeout(reject, 10000)
+		script.onreadystatechange = script.onload = function() {
+			if (!loaded) {
+				window.clearTimeout(timeout)
+				resolve()
+			}
+			loaded = true
+		}
+		document.getElementsByTagName('head')[0].appendChild(script)
+	})
+}
+exports.loadScriptToDom = loadScriptToDom
+
+var forkProcess = function(path) {
+	return new Promise((resolve) => {
+		var f = fork(path)
+		process.on('exit', () => f.kill())
+		resolve()
+	})
+}
+exports.forkProcess = forkProcess

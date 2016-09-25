@@ -1,16 +1,17 @@
 environment:
-  nodejs_version: "6.5"
+  nodejs_version: 6.5.0
 
 platform:
   - x86
-  - x64
 
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
+  - cinst -y nsis
+  - SET PATH=C:\Program Files\NSIS\;C:\Program Files (x86)\NSIS\;%PATH%
 
 build_script:
-  - cmd: node package.js
+  - cmd: node gulp.js package
 
 test_script:
   - node --version
@@ -18,7 +19,7 @@ test_script:
   - cmd: npm test
 
 artifacts:
-  - path: build
+  - path: b\Quirkbot Installer.exe
     name: build
 
 deploy:

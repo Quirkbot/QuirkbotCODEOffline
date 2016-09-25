@@ -1,25 +1,43 @@
 {
-  "name": "quirkbot-lite",
-  "main": "main.html",
-  "node-main": "main.js",
-  "chromium-args": "--load-extension=extension",
-  "window": {
-    "title": "Quirkbot Lite",
-    "toolbar": true,
-    "frame": true,
-    "width": 960,
-    "height": 768
-  },
+  "name": "quirkbot-code-lite",
+  "executable-name": "Quirkbot",
   "version": "0.0.1",
   "description": "",
+  "main": "main.html",
+  "node-main": "main.js",
+  "window": {
+    "title": "Quirkbot",
+    "toolbar": true,
+    "frame": true,
+    "width": 1920,
+    "height": 1080,
+    "min_width": 940,
+    "min_height": 600
+  },
+  "externally_connectable": {
+    "matches": [
+        "*://localhost/*"
+    ]
+  },
   "dependencies": {
-    "express": "^4.14.0",
     "quirkbot-data-api": "*",
     "quirkbot-chrome-app": "*",
     "quirkbot-code-static": "*",
-    "quirkbot-compiler": "*",
-    "wait-on": "^1.5.2"
+    "quirkbot-compiler": "*"
+  },
+	"manifestUrl": "http://localhost:8080/package.json",
+  "packages": {
+      "mac": {
+         "url": "http://localhost:8080/releases/mac/latest.zip"
+      },
+      "win": {
+         "url": "http://localhost:8080/releases/win/latest.zip"
+      },
+      "linux64": {
+         "url": "http://localhost:8080/releases/linux/latest.tar.gz"
+      }
   },
   "author": "Quirkbot <hello@quirkbot.com>",
-  "license": "GPL"
+  "license": "GPL",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt+/75JUxzsh2uUZDMihTBYZOzVbmyfJbf/HCcuJk7ijw0pW7/0SRIV3eKI/7x20Y60AXnC3hCg7G1+BghoU6cwT+3/9m5SJIZoCCNpwmEbBb3r2684Zh/F/AhOpfMmisnXZmAgkVdHXEVNI2T6tkwlMwmf122T85BeT6T0BnPRFeLPhrZ05fDaUkKkgJ1rh/YRidl71M/XEczW5wQARytlz7gxem0dsC4boDhCEqyTdsJRSP90D5hb8EEXXurAwN914Dp3yuOvFlkOjgpqnnPecKP6tD37yOOswVBBhtTlcFdLS+alAEfwK0Iik+L1tZ5rFO8WCnrdNMK0tbqH5VDwIDAQAB"
 }
