@@ -20,7 +20,7 @@ test_script:
   - cmd: npm test
 
 artifacts:
-  - path: b\Quirkbot Installer.exe
+  - path: b\latest\*
     name: build
 
 deploy:
