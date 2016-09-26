@@ -3,7 +3,7 @@ node_modules
 .tmp-build
 .tmp-sketches
 
-./b
+/b
 build
 cache
 
