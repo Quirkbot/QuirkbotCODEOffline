@@ -161,7 +161,7 @@ gulp.task('package-win32', function (cb) {
 
 	// Execute the NSIS builder
 	utils.pass()
-	.then(utils.execute(`makensis.exe /V4 /SOLID ${ASSETS_DIR}\\installer.nsi`))
+	.then(utils.execute(`makensis.exe /V4 ${ASSETS_DIR}\\installer.nsi`))
 	// Create the out directory
 	.then(utils.mkdir(
 		path.resolve(BUILD_DIR, 'latest')
