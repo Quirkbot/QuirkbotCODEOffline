@@ -12,6 +12,7 @@ install:
 
 build_script:
   - cmd: node gulp.js package
+  - cmd: makensis.exe /V4 assets-win32\installer.nsi
   - cmd: cd b && dir
 
 test_script:
