@@ -21,7 +21,7 @@ var execute = function(command, resolveError){
 
 		var promise = function(resolve, reject){
 			console.log(command)
-			exec(command, {maxBuffer: 1024 * 500}, function (error, stdout, stderr) {
+			exec(command, {maxBuffer: 1024 * 99999}, function (error, stdout, stderr) {
 
 				if (!resolveError && error !== null){
 					reject(stderr)
