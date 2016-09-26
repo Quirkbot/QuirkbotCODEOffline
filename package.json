@@ -1,8 +1,9 @@
 {
   "name": "quirkbot-lite-builder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "dependencies": {
+    "archiver": "^1.1.0",
     "es6-promise": "3.2.1",
     "find-remove": "^0.2.12",
     "gulp": "^3.9.1",
@@ -14,7 +15,7 @@
     "rimraf": "2.4.4",
     "run-sequence": "^1.2.2"
   },
-  "optionalDependencies":{
+  "optionalDependencies": {
     "appdmg": "^0.4.5"
   },
   "scripts": {

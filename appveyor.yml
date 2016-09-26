@@ -1,5 +1,5 @@
 environment:
-  nodejs_version: 6.5.0
+  nodejs_version: 6.6.0
 
 platform:
   - x86
@@ -19,7 +19,7 @@ test_script:
   - cmd: npm test
 
 artifacts:
-  - path: b\Quirkbot Installer.exe
+  - path: b\latest\**\*
     name: build
 
 deploy:
@@ -28,7 +28,7 @@ deploy:
     secure: AkqgS6TgE6nC0WUZ3nNtqoH1LkPOYhol/bSlMRleKcg=
   secret_access_key:
     secure: 8hFJeMNTHobCOn8OkZirlb3iCEGjUHtxsWSFv3Jo79nklT34asKfOVcFzf3WJ1/B
-  bucket: quirkbot-downloads-stage
+  bucket: quirkbot-downloads-production
   region: us-east-1
   set_public: true
   folder: quirkbot-lite-builds

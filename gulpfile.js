@@ -162,10 +162,28 @@ gulp.task('package-win32', function (cb) {
 	// Execute the NSIS builder
 	utils.pass()
 	.then(utils.execute(`makensis.exe /V4 ${ASSETS_DIR}\\installer.nsi`))
-	.then(function(std) {
-		console.log(std)
-		cb()
-	})
+	// Create the out directory
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest')
+	))
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest', process.platform)
+	))
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version)
+	))
+	// Move the installer
+	.then(utils.moveFile(
+		path.resolve(BUILD_DIR, 'QuirkbotInstaller.exe'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'QuirkbotInstaller.exe')
+	))
+	// Zip the source
+	.then(utils.zipDir(
+		path.resolve(BUILD_DIR, 'a'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip'),
+		pkg.versiongit
+	))
+	.then(cb)
 	.catch(cb)
 })
 
@@ -173,15 +191,39 @@ gulp.task('package-win32', function (cb) {
  * This task packages the mac application
  */
 gulp.task('package-darwin', function (cb) {
-	new Promise((resolve, reject) =>{
-		var pkg = require(path.resolve(SRC_DIR,'package.json'))
-		var appdmg = require('appdmg')
-		var dmg = appdmg({ source: `${ASSETS_DIR}/dmg.json`, target: `${BUILD_DIR}/${pkg['executable-name']} Installer.dmg` })
-		dmg.on('finish', resolve)
-		dmg.on('error', reject)
+	var pkg = require(path.resolve(SRC_DIR,'package.json'))
+	utils.pass()
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest')
+	))
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest', process.platform)
+	))
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version)
+	))
+	.then(utils.zipDir(
+		path.resolve(BUILD_DIR, 'a', `${pkg['executable-name']}.app`),
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip'),
+		`${pkg['executable-name']}.app`
+	))
+	.then(function() {
+		return new Promise((resolve, reject) =>{
+			var appdmg = require('appdmg')
+			var dmg = appdmg({
+				source: `${ASSETS_DIR}/dmg.json`,
+				target: path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}Installer.dmg` )
+			})
+
+			dmg.on('finish', resolve)
+			dmg.on('error', reject)
+		})
 	})
 	.then(cb)
-	.catch(cb)
+	.catch(function(error){
+		console.log(error)
+		cb(error)
+	})
 
 })
 
@@ -194,6 +236,7 @@ gulp.task('package', function(cb) {
 		`package-${process.platform}`,
 		cb
 	)
+
 })
 
 /*
@@ -292,7 +335,8 @@ gulp.task('post-clean', function (cb) {
 				'tests',
 				'example',
 				'examples',
-				'Bootloader'
+				'Bootloader',
+				'jsdoc-toolkit'
 
 			],
 			'ignore':[

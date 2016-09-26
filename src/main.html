@@ -15,7 +15,7 @@
 				utils.pass()
 				.then(utils.portBusy(config.ports.api))
 				.then(utils.portBusy(config.ports.code))
-				.then(() => window.location = "http://localhost:" + config.ports.code)
+				.then(() => window.location = `http://localhost:${config.ports.code}/?locale=cn`)
 				.catch(() => setTimeout(waitForServers, 500))
 			}
 			waitForServers()
