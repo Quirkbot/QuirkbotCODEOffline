@@ -135,7 +135,7 @@ var readDir = function(path){
 }
 exports.readDir = readDir
 
-var zipDir = function(src, dst) {
+var zipDir = function(src, dst, root) {
 	return function(){
 		return new Promise(function(resolve, reject) {
 
@@ -154,13 +154,7 @@ var zipDir = function(src, dst) {
 
 			archive.pipe(output)
 
-			archive.bulk([
-				{
-					expand: true,
-					cwd: src,
-					src: ['*']
-				}
-			])
+			archive.directory(src, root)
 
 			archive.finalize()
 		})
