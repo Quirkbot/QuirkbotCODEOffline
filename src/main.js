@@ -9,7 +9,7 @@ exports.init = function() {
 	var config = require( path.resolve('./', 'config.json') )
 
 	// Create database folder if needed
-	var dbPath = path.resolve( window.nw.App.dataPath, 'quirkbot-lite-db') + path.sep
+	var dbPath = path.resolve( window.nw.App.dataPath, 'qbdb') + path.sep
 
 	if( !fs.existsSync( dbPath ) ) {
 		console.log('creating databases directory')
