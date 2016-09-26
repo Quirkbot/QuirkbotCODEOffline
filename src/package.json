@@ -1,7 +1,6 @@
 {
   "name": "quirkbot-code-lite",
   "executable-name": "Quirkbot",
-  "version": "0.0.3",
   "version": "0.0.4",
   "description": "",
   "main": "main.html",
