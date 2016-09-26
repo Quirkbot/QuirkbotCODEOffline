@@ -1,6 +1,6 @@
 {
   "name": "quirkbot-lite-builder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "dependencies": {
     "archiver": "^1.1.0",
