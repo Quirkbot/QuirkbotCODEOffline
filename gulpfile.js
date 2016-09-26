@@ -118,8 +118,7 @@ gulp.task('compose', function(cb) {
 /*
  * This task builds the app as a platform specified executable program
  */
-//gulp.task('build', ['compose'], function (cb) {
-gulp.task('build', function (cb) {
+gulp.task('build', ['compose'], function (cb) {
 
 	var pkg = require(path.resolve(SRC_DIR,'package.json'))
 	// Build the app
@@ -182,7 +181,7 @@ gulp.task('package-win32', function (cb) {
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a'),
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip'),
-		pkg.version
+		pkg.versiongit
 	))
 	.then(cb)
 	.catch(cb)
