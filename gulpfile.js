@@ -161,7 +161,7 @@ gulp.task('package-win32', function (cb) {
 
 	// Execute the NSIS builder
 	utils.pass()
-	.then(utils.execute(`makensis.exe /V4 ${ASSETS_DIR}\\installer.nsi`))
+	.then(utils.execute(`makensis.exe /V4 /SOLID ${ASSETS_DIR}\\installer.nsi`))
 	// Create the out directory
 	.then(utils.mkdir(
 		path.resolve(BUILD_DIR, 'latest')
@@ -174,8 +174,8 @@ gulp.task('package-win32', function (cb) {
 	))
 	// Move the installer
 	.then(utils.moveFile(
-		path.resolve(BUILD_DIR, 'Quirkbot Installer.exe'),
-		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'Quirkbot Installer.exe')
+		path.resolve(BUILD_DIR, 'QuirkbotInstaller.exe'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'QuirkbotInstaller.exe')
 	))
 	// Zip the source
 	.then(utils.zipDir(
@@ -212,7 +212,7 @@ gulp.task('package-darwin', function (cb) {
 			var appdmg = require('appdmg')
 			var dmg = appdmg({
 				source: `${ASSETS_DIR}/dmg.json`,
-				target: path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']} Installer.dmg` )
+				target: path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}Installer.dmg` )
 			})
 
 			dmg.on('finish', resolve)
