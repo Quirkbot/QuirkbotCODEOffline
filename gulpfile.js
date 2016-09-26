@@ -118,7 +118,8 @@ gulp.task('compose', function(cb) {
 /*
  * This task builds the app as a platform specified executable program
  */
-gulp.task('build', ['compose'], function (cb) {
+//gulp.task('build', ['compose'], function (cb) {
+gulp.task('build', function (cb) {
 
 	var pkg = require(path.resolve(SRC_DIR,'package.json'))
 	// Build the app
@@ -164,6 +165,12 @@ gulp.task('package-win32', function (cb) {
 	.then(utils.execute(`makensis.exe /V4 ${ASSETS_DIR}\\installer.nsi`))
 	// Create the out directory
 	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest')
+	))
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest', process.platform)
+	))
+	.then(utils.mkdir(
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version)
 	))
 	// Move the installer
@@ -174,7 +181,8 @@ gulp.task('package-win32', function (cb) {
 	// Zip the source
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a'),
-		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip')
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip'),
+		pkg.version
 	))
 	.then(cb)
 	.catch(cb)
@@ -187,11 +195,18 @@ gulp.task('package-darwin', function (cb) {
 	var pkg = require(path.resolve(SRC_DIR,'package.json'))
 	utils.pass()
 	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest')
+	))
+	.then(utils.mkdir(
+		path.resolve(BUILD_DIR, 'latest', process.platform)
+	))
+	.then(utils.mkdir(
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version)
 	))
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a', `${pkg['executable-name']}.app`),
-		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip')
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip'),
+		`${pkg['executable-name']}.app`
 	))
 	.then(function() {
 		return new Promise((resolve, reject) =>{
@@ -206,7 +221,10 @@ gulp.task('package-darwin', function (cb) {
 		})
 	})
 	.then(cb)
-	.catch(cb)
+	.catch(function(error){
+		console.log(error)
+		cb(error)
+	})
 
 })
 
@@ -318,7 +336,8 @@ gulp.task('post-clean', function (cb) {
 				'tests',
 				'example',
 				'examples',
-				'Bootloader'
+				'Bootloader',
+				'jsdoc-toolkit'
 
 			],
 			'ignore':[
