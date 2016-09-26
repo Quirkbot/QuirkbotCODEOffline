@@ -175,12 +175,12 @@ gulp.task('package-win32', function (cb) {
 	// Move the installer
 	.then(utils.moveFile(
 		path.resolve(BUILD_DIR, 'QuirkbotInstaller.exe'),
-		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'QuirkbotInstaller.exe')
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-installer.exe`)
 	))
 	// Zip the source
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a'),
-		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`),
 		pkg.versiongit
 	))
 	.then(cb)
@@ -204,7 +204,7 @@ gulp.task('package-darwin', function (cb) {
 	))
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a', `${pkg['executable-name']}.app`),
-		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, 'src.zip'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`),
 		`${pkg['executable-name']}.app`
 	))
 	.then(function() {
@@ -212,7 +212,7 @@ gulp.task('package-darwin', function (cb) {
 			var appdmg = require('appdmg')
 			var dmg = appdmg({
 				source: `${ASSETS_DIR}/dmg.json`,
-				target: path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}Installer.dmg` )
+				target: path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-installer.dmg` )
 			})
 
 			dmg.on('finish', resolve)
