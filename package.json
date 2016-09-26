@@ -1,7 +1,5 @@
 {
   "name": "quirkbot-lite-builder",
-  "version": "0.0.2",
-  "description": "",
   "dependencies": {
     "archiver": "^1.1.0",
     "es6-promise": "3.2.1",
