@@ -87,7 +87,7 @@ gulp.task('move-extension', function () {
  */
 gulp.task('move-updater', function (cb) {
 	utils.pass()
-	.then(utils.copyDir(
+	.then(utils.copyFile(
 		path.resolve(ASSETS_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' ),
 		path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' )
 	))
