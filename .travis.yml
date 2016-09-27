@@ -5,6 +5,10 @@ os:
 - osx
 script:
 - node gulp.js package
+branches:
+  only:
+    - master
+    - develop
 deploy:
   provider: s3
   access_key_id:
