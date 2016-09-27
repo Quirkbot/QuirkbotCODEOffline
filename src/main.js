@@ -23,8 +23,9 @@ exports.init = function() {
 	// Prepare the environment variables
 	process.env.NODE_ENV = 'lite'
 	process.env.API_DISK_DB_PATH = dbPath
-	process.env.COMPILER_DISK_DB_PATH = dbPath
 	process.env.API_PORT = config.ports.api
+	process.env.COMPILER_DISK_DB_PATH = dbPath
+	process.env.COMPILER_BUILD_ROOT = window.nw.App.dataPath
 	process.env.COMPILER_PORT = config.ports.compiler
 	process.env.LITE_NICKNAME = config.credentials.nickname
 	process.env.LITE_PASSWORD = config.credentials.password
