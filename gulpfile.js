@@ -183,9 +183,9 @@ gulp.task('package-win32', function (cb) {
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`),
 		pkg.version
 	))
-	// Create the lastest manifest
+	// Create the latest manifest
 	.then(utils.writeFile(
-		path.resolve(BUILD_DIR, 'latest', process.platform, 'lastest.json'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, 'latest.json'),
 		JSON.stringify({
 			name: pkg.name,
 			version: pkg.version,
@@ -237,9 +237,9 @@ gulp.task('package-darwin', function (cb) {
 			dmg.on('error', reject)
 		})
 	})
-	// Create the lastest manifest
+	// Create the latest manifest
 	.then(utils.writeFile(
-		path.resolve(BUILD_DIR, 'latest', process.platform, 'lastest.json'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, 'latest.json'),
 		JSON.stringify({
 			name: pkg.name,
 			createdAt: new Date(),
