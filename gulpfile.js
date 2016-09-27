@@ -133,7 +133,7 @@ gulp.task('build', ['compose'], function (cb) {
 			SRC_DIR,
 			{
 				outputDir: BUILD_DIR,
-				version: '0.17.4',
+				version: '0.17.4-sdk',
 				outputName: 'a',
 				executableName: pkg['executable-name'],
 				sideBySide: true,
