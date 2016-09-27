@@ -181,7 +181,22 @@ gulp.task('package-win32', function (cb) {
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a'),
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`),
-		pkg.versiongit
+		pkg.version
+	))
+	// Create the lastest manifest
+	.then(utils.writeFile(
+		path.resolve(BUILD_DIR, 'latest', process.platform, 'lastest.json'),
+		JSON.stringify({
+			name: pkg.name,
+			version: pkg.version,
+			createdAt: new Date(),
+			installer: {
+				path: `${pkg.version}/${pkg['executable-name']}-${process.platform}-${pkg.version}-installer.exe`
+			},
+			src: {
+				path: `${pkg.version}/${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`
+			}
+		})
 	))
 	.then(cb)
 	.catch(cb)
@@ -193,6 +208,7 @@ gulp.task('package-win32', function (cb) {
 gulp.task('package-darwin', function (cb) {
 	var pkg = require(path.resolve(SRC_DIR,'package.json'))
 	utils.pass()
+	// Create the out directory
 	.then(utils.mkdir(
 		path.resolve(BUILD_DIR, 'latest')
 	))
@@ -202,11 +218,13 @@ gulp.task('package-darwin', function (cb) {
 	.then(utils.mkdir(
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version)
 	))
+	// Zip the source
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a', `${pkg['executable-name']}.app`),
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`),
 		`${pkg['executable-name']}.app`
 	))
+	// Build the DMG
 	.then(function() {
 		return new Promise((resolve, reject) =>{
 			var appdmg = require('appdmg')
@@ -219,6 +237,21 @@ gulp.task('package-darwin', function (cb) {
 			dmg.on('error', reject)
 		})
 	})
+	// Create the lastest manifest
+	.then(utils.writeFile(
+		path.resolve(BUILD_DIR, 'latest', process.platform, 'lastest.json'),
+		JSON.stringify({
+			name: pkg.name,
+			createdAt: new Date(),
+			installer: {
+				path: `${pkg.version}/${pkg['executable-name']}-${process.platform}-${pkg.version}-installer.dmg`
+			},
+			src: {
+				path: `${pkg.version}/${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`
+			}
+		})
+	))
+	// Create the update manifest
 	.then(cb)
 	.catch(function(error){
 		console.log(error)
