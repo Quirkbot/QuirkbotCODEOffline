@@ -54,6 +54,24 @@ var deleteFile = function(path){
 		var payload = arguments
 		var promise = function(resolve, reject){
 			fs.unlink(path, function (error) {
+				resolve.apply(null, payload)
+				/*if (error) {
+					reject(error)
+					return
+				}
+				resolve.apply(null, payload)*/
+			})
+		}
+		return new Promise(promise)
+	}
+}
+exports.deleteFile = deleteFile
+
+var moveFile = function(path, newPath){
+	return function(){
+		var payload = arguments
+		var promise = function(resolve, reject){
+			fs.rename(path, newPath, function (error) {
 				if (error) {
 					reject(error)
 					return
@@ -64,7 +82,42 @@ var deleteFile = function(path){
 		return new Promise(promise)
 	}
 }
-exports.deleteFile = deleteFile
+exports.moveFile = moveFile
+
+var chmod = function(path, mode){
+	return function(){
+		var payload = arguments
+		var promise = function(resolve, reject){
+			fs.chmod(path, mode, function (error) {
+				if (error) {
+					reject(error)
+					return
+				}
+				resolve.apply(null, payload)
+			})
+		}
+		return new Promise(promise)
+	}
+}
+exports.chmod = chmod
+
+var copyFile = function(src, dst){
+	return function(){
+		var payload = arguments
+		var promise = function(resolve, reject){
+			console.log('copy', src,dst)
+			var rd = fs.createReadStream(src)
+			rd.on('error', reject)
+
+			var wr = fs.createWriteStream(dst)
+			wr.on('error', reject)
+			wr.on('close', () => resolve.apply(null, payload))
+			rd.pipe(wr)
+		}
+		return new Promise(promise)
+	}
+}
+exports.copyFile = copyFile
 
 var readFile = function(path){
 	return function(){
@@ -157,14 +210,10 @@ exports.findFiles = findFiles
 
 var mkdir = function(path){
 	return function(){
-
+		var payload = arguments
 		var promise = function(resolve, reject){
 			fs.mkdir(path, function(error) {
-				if (error) {
-					reject(error)
-					return
-				}
-				resolve()
+				resolve.apply(null, payload)
 			})
 		}
 		return new Promise(promise)
