@@ -10,7 +10,7 @@ exports.init = function() {
 	var pkg = require( path.resolve('./', 'package.json') )
 
 	// Create database folder if needed
-	var dbPath = path.resolve( window.nw.App.dataPath, 'qbdb') + path.sep
+	var dbPath = path.resolve( window.nw.App.dataPath, 'qbdb' ) + path.sep
 
 	if( !fs.existsSync( dbPath ) ) {
 		console.log('creating databases directory')
@@ -88,8 +88,14 @@ exports.init = function() {
 	// Deal with auto updates...
 	var UPDATES_DIR = path.resolve(require('os').tmpdir(), 'com.quirkbot.Updates')
 	var UPDATER_BIN_NAME = /^win/.test(process.platform) ? 'updater.exe' : 'updater'
-	// Donwload manifest
-	fetch(`${config.updates.default}/${process.platform}/latest.json`)
+	// Download manifest
+	utils.path()
+	.then(() => {
+		if(process.platform == 'linux'){
+			throw 'Linux does not support auto update'
+		}
+		return fetch(`${config.updates.default}/${process.platform}/latest.json`)
+	})
 	.then(response => response.json())
 	.then(manifest => {
 		if(manifest.version != pkg.version){
@@ -105,7 +111,7 @@ exports.init = function() {
 		return new Promise((resolve, reject) => {
 			utils.pass(manifest)
 			.then(utils.checkStat(path.resolve(UPDATES_DIR, `${manifest.version}.zip`)))
-			.then(resolve)
+			.then(() => resolve(manifest))
 			.catch(() => {
 				utils.pass()
 				.then(utils.deleteFile(path.resolve(UPDATES_DIR, '.update.zip')))
@@ -141,11 +147,11 @@ exports.init = function() {
 	})
 	// Notify user about the update
 	.then(manifest => {
-		console.log('resolved',manifest)
 		return new Promise((resolve, reject) => {
 			const options = {
 				icon: 'assets/icon.png',
 				body: 'Click here to install',
+				requireInteraction: true
 			}
 			const notification = new Notification('A new update is available!', options)
 			notification.onclick = () => {
@@ -166,11 +172,22 @@ exports.init = function() {
 	))
 	// Run the update binay and quit
 	.then(manifest => {
+		let instDir
+		switch (process.platform) {
+		case 'darwin':
+			instDir = path.dirname(path.resolve('../../../../../../../'))
+			break
+		case 'win32':
+			instDir = path.dirname(path.resolve('./'))
+			break
+		}
+
 		require('child_process').spawn(
 			path.resolve(UPDATES_DIR, UPDATER_BIN_NAME),
 			[
 				'--bundle', path.resolve(UPDATES_DIR, `${manifest.version}.zip`),
-				'--inst-dir', path.resolve('test'),
+				'--inst-dir', instDir,
+				'--app-name', pkg['executable-name']
 			],
 			{
 				cwd: path.dirname(UPDATES_DIR),
@@ -178,6 +195,7 @@ exports.init = function() {
 				stdio: 'ignore',
 			})
 		.unref()
+		window.nw.App.quit()
 	})
 	.catch(error => console.error(error))
 
