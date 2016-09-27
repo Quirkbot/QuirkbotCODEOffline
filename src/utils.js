@@ -105,7 +105,6 @@ var copyFile = function(src, dst){
 	return function(){
 		var payload = arguments
 		var promise = function(resolve, reject){
-			console.log('copy', src,dst)
 			var rd = fs.createReadStream(src)
 			rd.on('error', reject)
 
