@@ -24,6 +24,8 @@ artifacts:
 
 version: "{build}"
 
+skip_tags: true
+
 deploy:
   - provider: S3
     access_key_id:

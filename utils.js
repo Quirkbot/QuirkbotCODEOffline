@@ -180,6 +180,25 @@ var copyDir = function(source, destination){
 }
 exports.copyDir = copyDir
 
+var copyFile = function(src, dst){
+	return function(){
+		var payload = arguments
+		var promise = function(resolve, reject){
+			console.log('copy', src,dst)
+			var rd = fs.createReadStream(src)
+			rd.on('error', reject)
+
+			var wr = fs.createWriteStream(dst)
+			wr.on('error', reject)
+			wr.on('close', () => resolve.apply(null, payload))
+			rd.pipe(wr)
+		}
+		return new Promise(promise)
+	}
+}
+exports.copyFile = copyFile
+
+
 var findFiles = function(startPath, filter, files){
 	files = files || []
 

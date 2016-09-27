@@ -87,7 +87,7 @@ gulp.task('move-extension', function () {
  */
 gulp.task('move-updater', function (cb) {
 	utils.pass()
-	.then(utils.copyDir(
+	.then(utils.copyFile(
 		path.resolve(ASSETS_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' ),
 		path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' )
 	))
@@ -183,9 +183,9 @@ gulp.task('package-win32', function (cb) {
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`),
 		pkg.version
 	))
-	// Create the lastest manifest
+	// Create the latest manifest
 	.then(utils.writeFile(
-		path.resolve(BUILD_DIR, 'latest', process.platform, 'lastest.json'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, 'latest.json'),
 		JSON.stringify({
 			name: pkg.name,
 			version: pkg.version,
@@ -237,9 +237,9 @@ gulp.task('package-darwin', function (cb) {
 			dmg.on('error', reject)
 		})
 	})
-	// Create the lastest manifest
+	// Create the latest manifest
 	.then(utils.writeFile(
-		path.resolve(BUILD_DIR, 'latest', process.platform, 'lastest.json'),
+		path.resolve(BUILD_DIR, 'latest', process.platform, 'latest.json'),
 		JSON.stringify({
 			name: pkg.name,
 			createdAt: new Date(),
