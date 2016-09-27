@@ -1,7 +1,7 @@
 {
   "name": "Quirkbot",
   "executable-name": "Quirkbot",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "main.html",
   "node-main": "main.js",
@@ -24,18 +24,6 @@
     "quirkbot-chrome-app": "*",
     "quirkbot-code-static": "*",
     "quirkbot-compiler": "*"
-  },
-	"manifestUrl": "http://localhost:8080/package.json",
-  "packages": {
-      "mac": {
-         "url": "http://localhost:8080/releases/mac/latest.zip"
-      },
-      "win": {
-         "url": "http://localhost:8080/releases/win/latest.zip"
-      },
-      "linux64": {
-         "url": "http://localhost:8080/releases/linux/latest.tar.gz"
-      }
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL",
