@@ -12,7 +12,7 @@
 		"api": 9512
 	},
 	"updates": {
-		"default": "https://s3.amazonaws.com/quirkbot-downloads-production/quirkbot-lite-builds/b/latest/",
-		"china": "https://s3.amazonaws.com/quirkbot-downloads-production-singapore/quirkbot-lite-builds/b/latest/"
+		"default": "https://s3.amazonaws.com/quirkbot-downloads-production/quirkbot-lite-builds/b/latest",
+		"china": "https://s3.amazonaws.com/quirkbot-downloads-production-singapore/quirkbot-lite-builds/b/latest"
 	}
 }
