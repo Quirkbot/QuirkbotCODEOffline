@@ -86,51 +86,61 @@ exports.init = function() {
 	.then(scripts => utils.loadScriptToDom(`/extension/${scripts.pop()}`))
 
 	// Deal with auto updates...
-	var UPDATES_DIR = path.resolve(require('os').tmpdir(), 'com.quirkbot.Updates')
+	var UPDATES_MANIFEST_URL = `${config.updates.default}/${process.platform}/latest.json`
+	var UPDATES_DIR = path.resolve(require('os').tmpdir(), 'Quirkbot')
 	var UPDATER_BIN_NAME = /^win/.test(process.platform) ? 'updater.exe' : 'updater'
 	// Download manifest
-	utils.path()
+	utils.pass()
+	.then(utils.logLabel('AUTOUPDATE: Starting...'))
 	.then(() => {
 		if(process.platform == 'linux'){
 			throw 'Linux does not support auto update'
 		}
-		return fetch(`${config.updates.default}/${process.platform}/latest.json`)
 	})
+	.then(utils.logLabel(`AUTOUPDATE: Downloading manifest from: ${UPDATES_MANIFEST_URL}...`))
+	.then(() => fetch(UPDATES_MANIFEST_URL))
 	.then(response => response.json())
 	.then(manifest => {
 		if(manifest.version != pkg.version){
+			console.log('AUTOUPDATE: Update manifest', manifest)
 			return manifest
 		}
 		else {
 			throw 'App is up to date!'
 		}
 	})
+	.then(utils.logLabel(`AUTOUPDATE: Using update directory: ${UPDATES_DIR}`))
 	.then(utils.mkdir(UPDATES_DIR))
 	// Donwload the src (or skip if already donwloaded)
+	.then(utils.logLabel('AUTOUPDATE: Grabbing source...'))
 	.then(manifest => {
 		return new Promise((resolve, reject) => {
+			const sourceTempDest = path.resolve(UPDATES_DIR, '.update.zip')
+			const sourceFinalDest = path.resolve(UPDATES_DIR, `${manifest.version}.zip`)
+			const sourceUrl = `${config.updates.default}/${process.platform}/${manifest.src.path}`
 			utils.pass(manifest)
-			.then(utils.checkStat(path.resolve(UPDATES_DIR, `${manifest.version}.zip`)))
+			.then(utils.checkStat(sourceFinalDest))
+			.then(utils.logLabel(`AUTOUPDATE: Source already downloaded at ${sourceFinalDest}`))
 			.then(() => resolve(manifest))
 			.catch(() => {
 				utils.pass()
-				.then(utils.deleteFile(path.resolve(UPDATES_DIR, '.update.zip')))
+				.then(utils.logLabel(`AUTOUPDATE: Clearing temp destination: ${sourceTempDest}`))
+				.then(utils.deleteFile(sourceTempDest))
+				.then(utils.logLabel(`AUTOUPDATE: Downloading source from: ${sourceUrl}`))
 				.then(() => {
 					return new Promise( (resolve, reject) =>{
-						const url = `${config.updates.default}/${process.platform}/${manifest.src.path}`
-						const dest = path.resolve(UPDATES_DIR, '.update.zip')
-						const http = /^https/.test(url) ? require('https') : require('http')
-
-						http.get(url, res => {
+						const http = /^https/.test(sourceUrl) ? require('https') : require('http')
+						http.get(sourceUrl, res => {
 							if (res.statusCode !== 200) {
 								return reject(new Error(res.statusMessage))
 							}
-							res.pipe(fs.createWriteStream(dest))
+							res.pipe(fs.createWriteStream(sourceTempDest))
 							.on('finish', () => {
 								utils.pass(manifest)
+								.then(utils.logLabel('AUTOUPDATE: Moving source from temporary to final destination'))
 								.then(utils.moveFile(
-									path.resolve(UPDATES_DIR, '.update.zip'),
-									path.resolve(UPDATES_DIR, `${manifest.version}.zip`)
+									sourceTempDest,
+									sourceFinalDest
 								))
 								.then(resolve)
 								.catch(reject)
@@ -139,6 +149,7 @@ exports.init = function() {
 						})
 					})
 				})
+				.then(utils.logLabel('AUTOUPDATE: Source successfully donwloaded!'))
 				.then(resolve)
 				.catch(reject)
 			})
@@ -146,6 +157,7 @@ exports.init = function() {
 
 	})
 	// Notify user about the update
+	.then(utils.logLabel('AUTOUPDATE: Displaying notification to user...'))
 	.then(manifest => {
 		return new Promise((resolve, reject) => {
 			const options = {
@@ -162,6 +174,7 @@ exports.init = function() {
 		})
 	})
 	// Copy the update binary to the update dir
+	.then(utils.logLabel(`AUTOUPDATE: Moving updater binary to ${path.resolve(UPDATES_DIR, UPDATER_BIN_NAME)}`))
 	.then(utils.copyFile(
 		path.resolve(UPDATER_BIN_NAME),
 		path.resolve(UPDATES_DIR, UPDATER_BIN_NAME)
@@ -170,19 +183,19 @@ exports.init = function() {
 		path.resolve(UPDATES_DIR, UPDATER_BIN_NAME),
 		755 & ~process.umask()
 	))
-	// Run the update binay and quit
+	// Run the update binary
 	.then(manifest => {
 		let instDir
 		switch (process.platform) {
 		case 'darwin':
-			instDir = path.dirname(path.resolve('../../../../../../../'))
+			instDir = path.resolve('./../../../../')
 			break
 		case 'win32':
 			instDir = path.dirname(path.resolve('./'))
 			break
 		}
 
-		require('child_process').spawn(
+		const args = [
 			path.resolve(UPDATES_DIR, UPDATER_BIN_NAME),
 			[
 				'--bundle', path.resolve(UPDATES_DIR, `${manifest.version}.zip`),
@@ -193,11 +206,15 @@ exports.init = function() {
 				cwd: path.dirname(UPDATES_DIR),
 				detached: true,
 				stdio: 'ignore',
-			})
-		.unref()
-		window.nw.App.quit()
+			}
+		]
+		return utils.pass()
+		.then(utils.logLabel(`AUTOUPDATE: Running updater:\n${JSON.stringify(args)}`))
+		.then(() => require('child_process').spawn.apply(this, args).unref())
 	})
-	.catch(error => console.error(error))
+	.then(utils.logLabel('AUTOUPDATE: Quitting app...'))
+	.then(() => window.nw.App.quit())
+	.catch(error => console.error('AUTOUPDATE: Canceled.', error))
 
 	// Graceful shutdown, kind of
 	process.on('SIGQUIT', () => process.exit())
