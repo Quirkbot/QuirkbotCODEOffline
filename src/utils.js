@@ -221,6 +221,21 @@ var mkdir = function(path){
 exports.mkdir = mkdir
 
 
+var logLabel = function(){
+	var message = arguments
+	return function(){
+		var payload = arguments
+		var promise = function(resolve){
+			for (var i = 0; i < message.length; i++) {
+				console.log(message[i])
+			}
+			resolve.apply(null, payload)
+		}
+		return new Promise(promise)
+	}
+}
+exports.logLabel = logLabel
+
 var log = function(){
 	var payload = arguments
 	var promise = function(resolve){
