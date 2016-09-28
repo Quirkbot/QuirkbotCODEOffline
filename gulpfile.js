@@ -242,6 +242,7 @@ gulp.task('package-darwin', function (cb) {
 		path.resolve(BUILD_DIR, 'latest', process.platform, 'latest.json'),
 		JSON.stringify({
 			name: pkg.name,
+			version: pkg.version,
 			createdAt: new Date(),
 			installer: {
 				path: `${pkg.version}/${pkg['executable-name']}-${process.platform}-${pkg.version}-installer.dmg`
