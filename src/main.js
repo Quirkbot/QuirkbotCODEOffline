@@ -191,7 +191,7 @@ exports.init = function() {
 			instDir = path.resolve('./../../../../')
 			break
 		case 'win32':
-			instDir = path.dirname(path.resolve('./'))
+			instDir = path.resolve('./')
 			break
 		}
 
