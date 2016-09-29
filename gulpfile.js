@@ -181,7 +181,7 @@ gulp.task('package-win32', function (cb) {
 	.then(utils.zipDir(
 		path.resolve(BUILD_DIR, 'a'),
 		path.resolve(BUILD_DIR, 'latest', process.platform, pkg.version, `${pkg['executable-name']}-${process.platform}-${pkg.version}-src.zip`),
-		pkg.version
+		''
 	))
 	// Create the latest manifest
 	.then(utils.writeFile(
