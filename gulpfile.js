@@ -20,7 +20,7 @@ var SRC_DIR = 'src'
  */
 gulp.task('install-dependencies', function (cb) {
 	utils.pass()
-	.then(utils.execute('npm cache clean'))
+	//.then(utils.execute('npm cache clean'))
 	.then(utils.execute(`npm --no-optional --production --prefix ${SRC_DIR} install ${SRC_DIR}`))
 	.then(function() {
 		cb()
@@ -83,7 +83,7 @@ gulp.task('move-extension', function () {
 })
 
 /*
- * This task moves the platform specific updated
+ * This task moves the platform specific updater
  */
 gulp.task('move-updater', function (cb) {
 	utils.pass()
@@ -283,6 +283,9 @@ gulp.task('pre-clean', function (cb) {
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'code')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'db')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'extension')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'package-lock.json')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'npm-shrinkwrap.json')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'yarn.lock')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function() {
@@ -296,8 +299,8 @@ gulp.task('pre-clean', function (cb) {
  */
 gulp.task('post-clean', function (cb) {
 	utils.pass()
-	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static`))
-	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app`))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static --no-save`))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app --no-save`))
 	.then(utils.execute(
 		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler')} uninstall newrelic mongoose es6-promise`
 	))
@@ -349,11 +352,11 @@ gulp.task('post-clean', function (cb) {
 				'README',
 				'Procfile',
 				'Makefile',
-				'LICENSE',
-				'LICENSE.txt',
-				'LICENCE',
-				'License',
-				'license',
+				//'LICENSE',
+				//'LICENSE.txt',
+				//'LICENCE',
+				//'License',
+				//'license',
 				'CHANGELOG',
 				'.gitignore',
 				'.npmignore',
