@@ -20,13 +20,56 @@ var SRC_DIR = 'src'
  */
 gulp.task('install-dependencies', function (cb) {
 	utils.pass()
-	.then(utils.execute('npm cache clean'))
+	// Create a fresh package.json from the template
+	.then(utils.copyFile(
+		path.resolve(SRC_DIR, 'package.template.json'),
+		path.resolve(SRC_DIR, 'package.json' )
+	))
+	// Install it
 	.then(utils.execute(`npm --no-optional --production --prefix ${SRC_DIR} install ${SRC_DIR}`))
 	.then(function() {
 		cb()
 	})
 	.catch(cb)
 })
+
+/*
+ * This task moves CODE's polymer build from lite environment to the app root
+ */
+gulp.task('move-code', function () {
+	return gulp.src(
+		path.resolve(SRC_DIR, 'node_modules', 'quirkbot-code-static', 'dist', 'lite', 'dist_polymer', '**')
+	)
+	.pipe(gulp.dest(path.resolve(SRC_DIR, 'code')))
+})
+
+/*
+ * This task moves extensions's build to the app root
+ */
+gulp.task('move-extension', function () {
+	return gulp.src(
+		path.resolve(SRC_DIR, 'node_modules', 'quirkbot-chrome-app', 'dist', '**')
+	)
+	.pipe(gulp.dest(path.resolve(SRC_DIR, 'extension')))
+})
+
+/*
+ * This task moves the platform specific updater
+ */
+gulp.task('move-updater', function (cb) {
+	utils.pass()
+	.then(utils.copyFile(
+		path.resolve(ASSETS_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' ),
+		path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' )
+	))
+	.then(cb)
+	.catch(cb)
+})
+
+/*
+ * This task moves all needed files around
+ */
+gulp.task('move-files', ['move-code', 'move-extension', 'move-updater'])
 
 /*
  * This task adds "*://localhost/*" to the extension allowed domains
@@ -61,45 +104,6 @@ gulp.task('patch-code', function () {
 	return file('injected_script.js', template(config.credentials), {src:true})
 		.pipe(gulp.dest(path.resolve(SRC_DIR, 'code')))
 })
-
-/*
- * This task moves CODE's polymer build from lite environment to the app root
- */
-gulp.task('move-code', function () {
-	return gulp.src(
-		path.resolve(SRC_DIR, 'node_modules', 'quirkbot-code-static', 'dist', 'lite', 'dist_polymer', '**')
-	)
-	.pipe(gulp.dest(path.resolve(SRC_DIR, 'code')))
-})
-
-/*
- * This task moves extensions's build to the app root
- */
-gulp.task('move-extension', function () {
-	return gulp.src(
-		path.resolve(SRC_DIR, 'node_modules', 'quirkbot-chrome-app', 'dist', '**')
-	)
-	.pipe(gulp.dest(path.resolve(SRC_DIR, 'extension')))
-})
-
-/*
- * This task moves the platform specific updated
- */
-gulp.task('move-updater', function (cb) {
-	utils.pass()
-	.then(utils.copyFile(
-		path.resolve(ASSETS_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' ),
-		path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater' )
-	))
-	.then(cb)
-	.catch(cb)
-})
-
-/*
- * This task moves all needed files around
- */
-gulp.task('move-files', ['move-code', 'move-extension', 'move-updater'])
-
 /*
  * This task makes the app ready to execute
  */
@@ -133,7 +137,7 @@ gulp.task('build', ['compose'], function (cb) {
 			SRC_DIR,
 			{
 				outputDir: BUILD_DIR,
-				version: '0.17.4-sdk',
+				version: '0.26.6',
 				outputName: 'a',
 				executableName: pkg['executable-name'],
 				sideBySide: true,
@@ -283,6 +287,9 @@ gulp.task('pre-clean', function (cb) {
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'code')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'db')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'extension')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'package-lock.json')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'npm-shrinkwrap.json')))
+	.then(utils.deleteDir(path.resolve(SRC_DIR, 'yarn.lock')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function() {
@@ -298,6 +305,7 @@ gulp.task('post-clean', function (cb) {
 	utils.pass()
 	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static`))
 	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app`))
+
 	.then(utils.execute(
 		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler')} uninstall newrelic mongoose es6-promise`
 	))
@@ -307,30 +315,31 @@ gulp.task('post-clean', function (cb) {
 	.then(utils.execute(
 		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-builder')} uninstall node-pre-gyp`
 	))
-	.then(utils.execute(
-		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-data-api')} uninstall `
-		+ 'newrelic '
-		+ 'loggly '
-		+ 'winston-loggly '
-		+ 'winston '
-		+ 'sails-mongo '
-		+ 'sails-generate '
-		+ 'node-mandrill '
-		+ 'grunt '
-		+ 'grunt-cli '
-		+ 'grunt-sync '
-		+ 'grunt-sails-linker '
-		+ 'grunt-contrib-clean '
-		+ 'grunt-contrib-coffee '
-		+ 'grunt-contrib-concat '
-		+ 'grunt-contrib-copy '
-		+ 'grunt-contrib-cssmin '
-		+ 'grunt-contrib-jst '
-		+ 'grunt-contrib-less '
-		+ 'grunt-contrib-uglify '
-		+ 'grunt-contrib-watch '
-		+ 'express-handlebars '
-	))
+
+	// .then(utils.execute(
+	// 	`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-data-api')} uninstall `
+	// 	+ 'newrelic '
+	// 	+ 'loggly '
+	// 	+ 'winston-loggly '
+	// 	+ 'winston '
+	// 	+ 'sails-mongo '
+	// 	+ 'sails-generate '
+	// 	+ 'node-mandrill '
+	// 	+ 'grunt '
+	// 	+ 'grunt-cli '
+	// 	+ 'grunt-sync '
+	// 	+ 'grunt-sails-linker '
+	// 	+ 'grunt-contrib-clean '
+	// 	+ 'grunt-contrib-coffee '
+	// 	+ 'grunt-contrib-concat '
+	// 	+ 'grunt-contrib-copy '
+	// 	+ 'grunt-contrib-cssmin '
+	// 	+ 'grunt-contrib-jst '
+	// 	+ 'grunt-contrib-less '
+	// 	+ 'grunt-contrib-uglify '
+	// 	+ 'grunt-contrib-watch '
+	// 	+ 'express-handlebars '
+	// ))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function () {
 		var remove = require('find-remove')
@@ -349,11 +358,11 @@ gulp.task('post-clean', function (cb) {
 				'README',
 				'Procfile',
 				'Makefile',
-				'LICENSE',
-				'LICENSE.txt',
-				'LICENCE',
-				'License',
-				'license',
+				//'LICENSE',
+				//'LICENSE.txt',
+				//'LICENCE',
+				//'License',
+				//'license',
 				'CHANGELOG',
 				'.gitignore',
 				'.npmignore',
@@ -362,7 +371,6 @@ gulp.task('post-clean', function (cb) {
 				'.jshintrc',
 				'.idea',
 				'.DS_Store'
-
 			],
 			dir: [
 				'test',
@@ -371,7 +379,6 @@ gulp.task('post-clean', function (cb) {
 				'examples',
 				'Bootloader',
 				'jsdoc-toolkit'
-
 			],
 			'ignore':[
 				'npm-arduino-avr-gcc'

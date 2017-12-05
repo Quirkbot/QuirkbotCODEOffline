@@ -334,7 +334,11 @@ exports.loadScriptToDom = loadScriptToDom
 
 var forkProcess = function(path) {
 	return new Promise((resolve) => {
-		var f = fork(path)
+		console.log('fork:', path)
+		const f = fork(path, { stdio : 'pipe' })
+		f.stdout.on('data', data => console.log(`${path}:\n\n${data}`))
+		f.stderr.on('data', data => console.log(`${path}:\n\n${data}`))
+		f.on('close', code => console.log(`child process exited with code ${code}`))
 		process.on('exit', () => f.kill())
 		resolve()
 	})

@@ -1,3 +1,4 @@
+.DS_Store
 node_modules
 *.log
 .tmp-build
@@ -13,4 +14,6 @@ src/extension
 src/etc
 src/updater
 src/updater.exe
-
+src/package.json
+src/package-lock.json
+src/yarn.lock

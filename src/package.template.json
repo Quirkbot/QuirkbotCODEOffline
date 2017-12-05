@@ -16,7 +16,7 @@
   },
   "externally_connectable": {
     "matches": [
-        "*://localhost/*"
+      "*://localhost/*"
     ]
   },
   "dependencies": {
