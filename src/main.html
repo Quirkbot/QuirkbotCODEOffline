@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Quirkbot lite</title>
+		<title>Quirkbot</title>
 		<script>
 			// Init the main.js process
 			nw.process.mainModule.exports.init()
@@ -13,7 +13,7 @@
 			var waitForServers = function() {
 				console.log('Waiting')
 				utils.pass()
-				//.then(utils.portBusy(config.ports.api))
+				.then(utils.portBusy(config.ports.api))
 				.then(utils.portBusy(config.ports.code))
 				.then(() => window.location = `http://localhost:${config.ports.code}/`)
 				.catch(() => setTimeout(waitForServers, 500))

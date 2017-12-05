@@ -20,8 +20,10 @@
     ]
   },
   "dependencies": {
-    "quirkbot-compiler": "*",
-    "quirkbot-data-api": "*"
+    "quirkbot-data-api": "*",
+    "quirkbot-chrome-app": "*",
+    "quirkbot-code-static": "*",
+    "quirkbot-compiler": "*"
   },
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL",

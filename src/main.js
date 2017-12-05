@@ -10,28 +10,28 @@ exports.init = function() {
 	var pkg = require( path.resolve('./', 'package.json') )
 
 	// Create database folder if needed
-	//var dbPath = path.resolve( window.nw.App.dataPath, 'qbdb' ) + path.sep
+	var dbPath = path.resolve( window.nw.App.dataPath, 'qbdb' ) + path.sep
 
-	//if( !fs.existsSync( dbPath ) ) {
-	//	console.log('creating databases directory')
-	//	console.log( dbPath )
-	//	fs.mkdirSync( dbPath )
-	//} else {
-	//	console.log('found database folder', dbPath )
-	//	console.log( dbPath )
-	//}
+	if( !fs.existsSync( dbPath ) ) {
+		console.log('creating databases directory')
+		console.log( dbPath )
+		fs.mkdirSync( dbPath )
+	} else {
+		console.log('found database folder', dbPath )
+		console.log( dbPath )
+	}
 
 	// Prepare the environment variables
 	process.env.NODE_ENV = 'lite'
-	//process.env.API_DISK_DB_PATH = dbPath
-	//process.env.API_PORT = config.ports.api
-	//process.env.COMPILER_DISK_DB_PATH = dbPath
-	//process.env.COMPILER_BUILD_ROOT = window.nw.App.dataPath
-	//process.env.COMPILER_PORT = config.ports.compiler
-	//process.env.LITE_NICKNAME = config.credentials.nickname
-	//process.env.LITE_PASSWORD = config.credentials.password
-	//process.env.LITE_EMAIL = config.credentials.email
-	//process.env.WEB_CONCURRENCY = 1
+	process.env.API_DISK_DB_PATH = dbPath
+	process.env.API_PORT = config.ports.api
+	process.env.COMPILER_DISK_DB_PATH = dbPath
+	process.env.COMPILER_BUILD_ROOT = window.nw.App.dataPath
+	process.env.COMPILER_PORT = config.ports.compiler
+	process.env.LITE_NICKNAME = config.credentials.nickname
+	process.env.LITE_PASSWORD = config.credentials.password
+	process.env.LITE_EMAIL = config.credentials.email
+	process.env.WEB_CONCURRENCY = 1
 
 	// Iniitialize CODE
 	http.createServer(function (request, response) {
@@ -65,11 +65,11 @@ exports.init = function() {
 	}).listen(config.ports.code)
 
 	// Iniitialize API
-	//utils.forkProcess( path.resolve( utils.modulePath('quirkbot-data-api'), 'app.js') )
+	utils.forkProcess( path.resolve( utils.modulePath('quirkbot-data-api'), 'app.js') )
 
 	// Initialized COMPILER
-	//utils.forkProcess( path.resolve( utils.modulePath('quirkbot-compiler'), 'server.js') )
-	//utils.forkProcess( path.resolve( utils.modulePath('quirkbot-compiler'), 'compiler.js') )
+	utils.forkProcess( path.resolve( utils.modulePath('quirkbot-compiler'), 'server.js') )
+	utils.forkProcess( path.resolve( utils.modulePath('quirkbot-compiler'), 'compiler.js') )
 
 	// Load the extension
 	fetch('/extension/manifest.json')

@@ -17,7 +17,8 @@
     "appdmg": "^0.4.5"
   },
   "scripts": {
-    "gulp": "node ./node_modules/gulp/bin/gulp.js",
+    "build": "node gulp.js build",
+    "package": "node gulp.js package",
     "test": "exit 0"
   },
   "author": "Quirkbot <hello@quirkbot.com>",

@@ -20,46 +20,17 @@ var SRC_DIR = 'src'
  */
 gulp.task('install-dependencies', function (cb) {
 	utils.pass()
-	//.then(utils.execute('npm cache clean'))
+	// Create a fresh package.json from the template
+	.then(utils.copyFile(
+		path.resolve(SRC_DIR, 'package.template.json'),
+		path.resolve(SRC_DIR, 'package.json' )
+	))
+	// Install it
 	.then(utils.execute(`npm --no-optional --production --prefix ${SRC_DIR} install ${SRC_DIR}`))
 	.then(function() {
 		cb()
 	})
 	.catch(cb)
-})
-
-/*
- * This task adds "*://localhost/*" to the extension allowed domains
- */
-gulp.task('patch-extension', function () {
-	return gulp.src(
-			path.resolve( SRC_DIR, 'extension', 'manifest.json' )
-		)
-		.pipe(
-			jeditor(function (json) {
-				var matches = json.externally_connectable.matches
-				if( matches.indexOf( '*://localhost/*' ) == -1 ) {
-					matches.push('*://localhost/*')
-				}
-				return json
-			})
-		)
-		.pipe(
-			gulp.dest( path.resolve( SRC_DIR, 'extension' ) )
-		)
-})
-
-/*
- * This task creates an injected_script.js file with relevant information
- * extracted from config.json
- */
-gulp.task('patch-code', function () {
-	var template = function( opts ) {
-		return 'window.QUIRKBOT_CODE_DEFAULT_USER_NICKNAME = "' + opts.nickname + '"; \
-						window.QUIRKBOT_CODE_DEFAULT_USER_PASSWORD = "' + opts.password + '";'
-	}
-	return file('injected_script.js', template(config.credentials), {src:true})
-		.pipe(gulp.dest(path.resolve(SRC_DIR, 'code')))
 })
 
 /*
@@ -101,6 +72,39 @@ gulp.task('move-updater', function (cb) {
 gulp.task('move-files', ['move-code', 'move-extension', 'move-updater'])
 
 /*
+ * This task adds "*://localhost/*" to the extension allowed domains
+ */
+gulp.task('patch-extension', function () {
+	return gulp.src(
+			path.resolve( SRC_DIR, 'extension', 'manifest.json' )
+		)
+		.pipe(
+			jeditor(function (json) {
+				var matches = json.externally_connectable.matches
+				if( matches.indexOf( '*://localhost/*' ) == -1 ) {
+					matches.push('*://localhost/*')
+				}
+				return json
+			})
+		)
+		.pipe(
+			gulp.dest( path.resolve( SRC_DIR, 'extension' ) )
+		)
+})
+
+/*
+ * This task creates an injected_script.js file with relevant information
+ * extracted from config.json
+ */
+gulp.task('patch-code', function () {
+	var template = function( opts ) {
+		return 'window.QUIRKBOT_CODE_DEFAULT_USER_NICKNAME = "' + opts.nickname + '"; \
+						window.QUIRKBOT_CODE_DEFAULT_USER_PASSWORD = "' + opts.password + '";'
+	}
+	return file('injected_script.js', template(config.credentials), {src:true})
+		.pipe(gulp.dest(path.resolve(SRC_DIR, 'code')))
+})
+/*
  * This task makes the app ready to execute
  */
 gulp.task('compose', function(cb) {
@@ -133,7 +137,7 @@ gulp.task('build', ['compose'], function (cb) {
 			SRC_DIR,
 			{
 				outputDir: BUILD_DIR,
-				version: '0.17.4-sdk',
+				version: '0.26.6',
 				outputName: 'a',
 				executableName: pkg['executable-name'],
 				sideBySide: true,
@@ -299,8 +303,9 @@ gulp.task('pre-clean', function (cb) {
  */
 gulp.task('post-clean', function (cb) {
 	utils.pass()
-	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static --no-save`))
-	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app --no-save`))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static`))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app`))
+
 	.then(utils.execute(
 		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler')} uninstall newrelic mongoose es6-promise`
 	))
@@ -310,30 +315,31 @@ gulp.task('post-clean', function (cb) {
 	.then(utils.execute(
 		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-builder')} uninstall node-pre-gyp`
 	))
-	.then(utils.execute(
-		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-data-api')} uninstall `
-		+ 'newrelic '
-		+ 'loggly '
-		+ 'winston-loggly '
-		+ 'winston '
-		+ 'sails-mongo '
-		+ 'sails-generate '
-		+ 'node-mandrill '
-		+ 'grunt '
-		+ 'grunt-cli '
-		+ 'grunt-sync '
-		+ 'grunt-sails-linker '
-		+ 'grunt-contrib-clean '
-		+ 'grunt-contrib-coffee '
-		+ 'grunt-contrib-concat '
-		+ 'grunt-contrib-copy '
-		+ 'grunt-contrib-cssmin '
-		+ 'grunt-contrib-jst '
-		+ 'grunt-contrib-less '
-		+ 'grunt-contrib-uglify '
-		+ 'grunt-contrib-watch '
-		+ 'express-handlebars '
-	))
+
+	// .then(utils.execute(
+	// 	`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-data-api')} uninstall `
+	// 	+ 'newrelic '
+	// 	+ 'loggly '
+	// 	+ 'winston-loggly '
+	// 	+ 'winston '
+	// 	+ 'sails-mongo '
+	// 	+ 'sails-generate '
+	// 	+ 'node-mandrill '
+	// 	+ 'grunt '
+	// 	+ 'grunt-cli '
+	// 	+ 'grunt-sync '
+	// 	+ 'grunt-sails-linker '
+	// 	+ 'grunt-contrib-clean '
+	// 	+ 'grunt-contrib-coffee '
+	// 	+ 'grunt-contrib-concat '
+	// 	+ 'grunt-contrib-copy '
+	// 	+ 'grunt-contrib-cssmin '
+	// 	+ 'grunt-contrib-jst '
+	// 	+ 'grunt-contrib-less '
+	// 	+ 'grunt-contrib-uglify '
+	// 	+ 'grunt-contrib-watch '
+	// 	+ 'express-handlebars '
+	// ))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function () {
 		var remove = require('find-remove')
@@ -365,7 +371,6 @@ gulp.task('post-clean', function (cb) {
 				'.jshintrc',
 				'.idea',
 				'.DS_Store'
-
 			],
 			dir: [
 				'test',
@@ -374,7 +379,6 @@ gulp.task('post-clean', function (cb) {
 				'examples',
 				'Bootloader',
 				'jsdoc-toolkit'
-
 			],
 			'ignore':[
 				'npm-arduino-avr-gcc'
