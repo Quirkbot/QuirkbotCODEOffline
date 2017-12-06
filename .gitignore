@@ -7,6 +7,7 @@ node_modules
 /b
 build
 cache
+yarn.lock
 
 src/db
 src/code
@@ -14,6 +15,4 @@ src/extension
 src/etc
 src/updater
 src/updater.exe
-src/package.json
-src/package-lock.json
 src/yarn.lock
