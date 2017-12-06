@@ -20,12 +20,6 @@ var SRC_DIR = 'src'
  */
 gulp.task('install-dependencies', function (cb) {
 	utils.pass()
-	// Create a fresh package.json from the template
-	.then(utils.copyFile(
-		path.resolve(SRC_DIR, 'package.template.json'),
-		path.resolve(SRC_DIR, 'package.json' )
-	))
-	// Install it
 	.then(utils.execute(`npm --no-optional --production --prefix ${SRC_DIR} install ${SRC_DIR}`))
 	.then(function() {
 		cb()
@@ -137,7 +131,7 @@ gulp.task('build', ['compose'], function (cb) {
 			SRC_DIR,
 			{
 				outputDir: BUILD_DIR,
-				version: '0.26.6',
+				version: '0.26.6-sdk',
 				outputName: 'a',
 				executableName: pkg['executable-name'],
 				sideBySide: true,
@@ -287,9 +281,6 @@ gulp.task('pre-clean', function (cb) {
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'code')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'db')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'extension')))
-	.then(utils.deleteDir(path.resolve(SRC_DIR, 'package-lock.json')))
-	.then(utils.deleteDir(path.resolve(SRC_DIR, 'npm-shrinkwrap.json')))
-	.then(utils.deleteDir(path.resolve(SRC_DIR, 'yarn.lock')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, /^win/.test(process.platform) ? 'updater.exe' : 'updater')))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function() {
@@ -303,8 +294,8 @@ gulp.task('pre-clean', function (cb) {
  */
 gulp.task('post-clean', function (cb) {
 	utils.pass()
-	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static`))
-	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app`))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-code-static --no-save`))
+	.then(utils.execute(`npm --prefix ${SRC_DIR} uninstall quirkbot-chrome-app --no-save`))
 
 	.then(utils.execute(
 		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler')} uninstall newrelic mongoose es6-promise`
@@ -315,77 +306,65 @@ gulp.task('post-clean', function (cb) {
 	.then(utils.execute(
 		`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-compiler', 'node_modules', 'npm-arduino-builder')} uninstall node-pre-gyp`
 	))
-
-	// .then(utils.execute(
-	// 	`npm --prefix ${path.resolve(SRC_DIR, 'node_modules', 'quirkbot-data-api')} uninstall `
-	// 	+ 'newrelic '
-	// 	+ 'loggly '
-	// 	+ 'winston-loggly '
-	// 	+ 'winston '
-	// 	+ 'sails-mongo '
-	// 	+ 'sails-generate '
-	// 	+ 'node-mandrill '
-	// 	+ 'grunt '
-	// 	+ 'grunt-cli '
-	// 	+ 'grunt-sync '
-	// 	+ 'grunt-sails-linker '
-	// 	+ 'grunt-contrib-clean '
-	// 	+ 'grunt-contrib-coffee '
-	// 	+ 'grunt-contrib-concat '
-	// 	+ 'grunt-contrib-copy '
-	// 	+ 'grunt-contrib-cssmin '
-	// 	+ 'grunt-contrib-jst '
-	// 	+ 'grunt-contrib-less '
-	// 	+ 'grunt-contrib-uglify '
-	// 	+ 'grunt-contrib-watch '
-	// 	+ 'express-handlebars '
-	// ))
 	.then(utils.deleteDir(path.resolve(SRC_DIR, 'etc')))
 	.then(function () {
-		var remove = require('find-remove')
-		var results = remove(path.resolve(SRC_DIR,'node_modules'), {
-			extensions: [
-				'.md',
-				'.MD',
-				'.markdown',
-				'.log',
-				'.bak',
-				'.min.js'
-			],
-			files: [
-				//'package.json',
-				'npm-shrinkwrap.json',
-				'README',
-				'Procfile',
-				'Makefile',
-				//'LICENSE',
-				//'LICENSE.txt',
-				//'LICENCE',
-				//'License',
-				//'license',
-				'CHANGELOG',
-				'.gitignore',
-				'.npmignore',
-				'.editorconfig',
-				'.travis.yml',
-				'.jshintrc',
-				'.idea',
-				'.DS_Store'
-			],
-			dir: [
-				'test',
-				'tests',
-				'example',
-				'examples',
-				'Bootloader',
-				'jsdoc-toolkit'
-			],
-			'ignore':[
-				'npm-arduino-avr-gcc'
-			]
+		return new Promise(function(resolve, reject) {
+			var modclean = require('modclean')
+			modclean({ cwd : path.resolve(SRC_DIR,'node_modules') }, function(error, results) {
+				if( error ) {
+					return reject(error)
+				}
+				console.log(results)
+				resolve()
+			})
 		})
-		console.log(`Removed ${Object.keys(results).length} files.`)
 	})
+
+	// .then(function () {
+	// 	var remove = require('find-remove')
+	// 	var results = remove(path.resolve(SRC_DIR,'node_modules'), {
+	// 		extensions: [
+	// 			'.md',
+	// 			'.MD',
+	// 			'.markdown',
+	// 			'.log',
+	// 			'.bak',
+	// 			'.min.js'
+	// 		],
+	// 		files: [
+	// 			//'package.json',
+	// 			'npm-shrinkwrap.json',
+	// 			'README',
+	// 			'Procfile',
+	// 			'Makefile',
+	// 			//'LICENSE',
+	// 			//'LICENSE.txt',
+	// 			//'LICENCE',
+	// 			//'License',
+	// 			//'license',
+	// 			'CHANGELOG',
+	// 			'.gitignore',
+	// 			'.npmignore',
+	// 			'.editorconfig',
+	// 			'.travis.yml',
+	// 			'.jshintrc',
+	// 			'.idea',
+	// 			'.DS_Store'
+	// 		],
+	// 		dir: [
+	// 			'test',
+	// 			'tests',
+	// 			'example',
+	// 			'examples',
+	// 			'Bootloader',
+	// 			'jsdoc-toolkit'
+	// 		],
+	// 		'ignore':[
+	// 			'npm-arduino-avr-gcc'
+	// 		]
+	// 	})
+	// 	console.log(`Removed ${Object.keys(results).length} files.`)
+	// })
 	.then(function() {
 		cb()
 	})

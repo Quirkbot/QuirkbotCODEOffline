@@ -1,20 +1,21 @@
 {
   "name": "quirkbot-lite-builder",
   "dependencies": {
-    "archiver": "^1.1.0",
-    "es6-promise": "3.2.1",
-    "find-remove": "^0.2.12",
+    "archiver": "^2.1.0",
+    "es6-promise": "4.1.1",
+    "find-remove": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-api-log": "*",
     "gulp-file": "^0.3.0",
     "gulp-json-editor": "^2.2.1",
+    "modclean": "^2.1.2",
     "ncp": "2.0.0",
     "nwjs-builder": "^1.13.1",
-    "rimraf": "2.4.4",
-    "run-sequence": "^1.2.2"
+    "rimraf": "2.6.2",
+    "run-sequence": "^2.2.0"
   },
   "optionalDependencies": {
-    "appdmg": "^0.4.5"
+    "appdmg": "^0.5.2"
   },
   "scripts": {
     "build": "node gulp.js build",
@@ -24,9 +25,9 @@
   "author": "Quirkbot <hello@quirkbot.com>",
   "license": "GPL",
   "devDependencies": {
-    "eslint": "^3.4.0",
-    "eslint-config-standard": "^6.0.0",
-    "eslint-plugin-promise": "^2.0.1",
-    "eslint-plugin-standard": "^2.0.0"
+    "eslint": "^4.12.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1"
   }
 }

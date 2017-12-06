@@ -1,7 +1,7 @@
 {
   "name": "Quirkbot",
   "executable-name": "Quirkbot",
-  "version": "0.0.17",
+  "version": "0.0.19",
   "description": "",
   "main": "main.html",
   "node-main": "main.js",
